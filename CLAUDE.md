@@ -1,125 +1,345 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for Claude Code and other coding agents working in this repository.
 
-## Project Overview — CRITICAL MENTAL MODEL
+## Current State
 
-**This repo IS the USB drive content**, minus large dependencies. The relationship:
+This repository is being converted from **U-Claw** to **SG Claw**.
+
+Current reality:
+- The repo still contains U-Claw/China-oriented UI, scripts, docs, and skills.
+- The portable launcher currently opens the config center at `portable/config-server/public/index.html`.
+- There is no `portable/Onboarding.html` yet.
+- There is no `portable/skills-sg/` yet.
+- Existing skills live in `portable/skills-cn/` and are copied into OpenClaw during setup.
+
+Target direction:
+- SG Claw should become a Singapore-localised OpenClaw wrapper.
+- Priority use cases are household admin/bills, groceries/cooking, family coordination, scam/document checking, and Singapore life admin.
+
+
+## Project Model
+
+SG Claw packages OpenClaw onto a USB/app experience so non-technical users can configure and run an AI assistant with minimal setup.
+
+We do not build the AI engine. OpenClaw is the engine. This repository provides:
+- Launchers
+- Bundled Node.js runtime
+- OpenClaw installation wrapper
+- Config/onboarding UI
+- Local config/data layout
+- Preloaded skills
+- Maintenance/install scripts
+
+## Current Runtime Pieces
+
+### 1. OpenClaw
+
+OpenClaw is installed as an npm package under:
+
+```text
+portable/app/core/node_modules/openclaw/
+```
+
+Do not edit OpenClaw package files directly. Change this wrapper, config, skills, or setup scripts instead.
+
+OpenClaw reads:
+
+```text
+portable/data/.openclaw/openclaw.json
+```
+
+The launchers set:
+- `OPENCLAW_HOME`
+- `OPENCLAW_STATE_DIR`
+- `OPENCLAW_CONFIG_PATH`
+
+### 2. Bundled Node.js
+
+Users should not need a system Node.js install. Runtime binaries are downloaded by setup scripts into:
+
+```text
+portable/app/runtime/node-mac-arm64/
+portable/app/runtime/node-mac-x64/
+portable/app/runtime/node-win-x64/
+```
+
+### 3. Portable Launchers
+
+Portable entrypoints:
+- `portable/Mac-Start.command`
+- `portable/Windows-Start.bat`
+
+The Mac launcher currently:
+- Detects architecture
+- Finds bundled Node.js
+- Creates `portable/data/.openclaw/openclaw.json` if missing
+- Starts OpenClaw gateway on the first available port from `18789` to `18799`
+- Starts config-server on fixed port `18788`
+- Opens both the OpenClaw dashboard and config center
+
+Do not remove the config-server startup unless the UI no longer needs browser-to-disk writes.
+
+### End-to-End Flow
+
+This is how all pieces connect at runtime. Every contributor should understand this before changing anything.
 
 ```
-代码库（git）= U 盘骨架（脚本 + HTML + 小文件）
-     ↓ bash setup.sh
-完整文件夹 = U 盘内容（骨架 + Node.js + OpenClaw）
-     ↓ 拷贝到 U 盘
-U 盘 = 插上就能用
+User plugs in USB, double-clicks Mac-Start.command
+  │
+  ├─ Script detects CPU arch, finds bundled Node.js in app/runtime/
+  ├─ Sets env vars: OPENCLAW_HOME, OPENCLAW_STATE_DIR, OPENCLAW_CONFIG_PATH
+  ├─ Scans ports 18789–18799, picks first free one
+  │
+  ├─ Starts config-server on port 18788          (config-server/server.js)
+  │     Serves HTML pages
+  │     GET/POST /api/config reads/writes openclaw.json
+  │
+  ├─ Starts OpenClaw gateway on port 18789       (app/core/node_modules/openclaw/openclaw.mjs)
+  │     The actual AI engine
+  │     Reads openclaw.json for all configuration
+  │
+  └─ Opens browser to both ports
+        │
+        v
+  Browser loads config UI from config-server (port 18788)
+        │
+        ├─ User picks model (e.g. DeepSeek)
+        ├─ User enters API key
+        ├─ User enters Telegram bot token
+        │
+        ├─ JavaScript builds config JSON   ← THIS IS THE CRITICAL STEP
+        │     Must include: baseUrl, api, models[], matching primary
+        │     Reference: Config.html buildOpenClawConfig() ~line 428
+        │
+        └─ fetch POST to http://127.0.0.1:18788/api/config
+              │
+              v
+        Config-server writes JSON to data/.openclaw/openclaw.json
+              │
+              v
+        OpenClaw hot-reloads the config
+              ├─ Connects to DeepSeek API (using baseUrl + apiKey from config)
+              ├─ Connects to Telegram Bot API (using token from config)
+              └─ Dashboard is live on port 18789
+                    │
+                    v
+              User messages their Telegram bot → AI responds
 ```
 
-The repo is NOT a "build tool" or "generator" — it IS the USB structure. `setup.sh` only fills in large deps that can't go in git. After `setup.sh`, the `portable/` folder is directly copyable to a USB drive.
+Key insight: the HTML page never talks to DeepSeek or Telegram. It only writes JSON. The config-server only moves JSON between browser and disk. OpenClaw does all the real work. If the JSON is correct, everything works. If the JSON is wrong, nothing works.
 
-Four distribution forms:
-1. **Portable USB** (`portable/`): Run from USB on existing Mac/Windows, zero install.
-2. **Electron desktop app** (`u-claw-app/`): Install-to-computer version, packaged as DMG/EXE.
-3. **Bootable Linux USB** (`bootable/`): Ventoy + Ubuntu 24.04 — boots any x86_64 PC from USB, no OS needed.
-4. **One-line install** (`install/`): `curl | bash` or `irm | iex` — download and install from network, no USB needed.
+### 4. Config Server
+
+Current file:
+
+```text
+portable/config-server/server.js
+```
+
+Current fixed port:
+
+```text
+18788
+```
+
+Current config path:
+
+```text
+portable/data/.openclaw/openclaw.json
+```
+
+Core endpoints:
+- `GET /api/config`
+- `POST /api/config`
+
+Important details:
+- `POST /api/config` overwrites the whole config object sent by the client.
+- It deletes deprecated top-level `agent` before writing.
+- Static files are served from `portable/config-server/public/`.
+- `GET /` serves `portable/config-server/public/index.html`.
+- It does not currently serve arbitrary files from `portable/`.
+
+Legacy note:
+- The config-server currently contains WeChat/iLink QR login and plugin-install code.
+- This is U-Claw/China-specific legacy functionality.
+- Do not extend it for SG Claw unless the product decision explicitly includes WeChat.
+- For SG Claw, prefer WhatsApp and Telegram.
+
+### 5. HTML Config UI
+
+Current primary browser UI:
+
+```text
+portable/config-server/public/index.html
+```
+
+Legacy/reference UI:
+
+```text
+portable/Config.html
+```
+
+Both are plain HTML/CSS/JS with no build step.
+
+Current config-building functions:
+- `portable/config-server/public/index.html`: `buildConfig(...)`
+- `portable/Config.html`: `buildOpenClawConfig(...)`
+
+If you add a new onboarding page, either reuse the same config shape or refactor config-building into shared JS first. Do not create a third incompatible config format.
+
+## Config Contract
+
+`openclaw.json` is the interface between this wrapper and OpenClaw.
+
+Known working model-provider shape used by current UI:
+
+```json
+{
+  "gateway": {
+    "auth": { "mode": "token", "token": "uclaw" }
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "restart": true,
+    "ownerDisplay": "raw"
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "deepseek": {
+        "baseUrl": "https://api.deepseek.com/v1",
+        "apiKey": "USER_API_KEY",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "deepseek-chat",
+            "name": "deepseek-chat",
+            "reasoning": false,
+            "input": ["text"],
+            "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+            "contextWindow": 128000,
+            "maxTokens": 8192
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": { "primary": "deepseek/deepseek-chat" }
+    }
+  },
+  "meta": {
+    "lastTouchedVersion": "2026.3.13",
+    "lastTouchedAt": "ISO_TIMESTAMP"
+  }
+}
+```
+
+Critical rules:
+- `models.providers.<provider>.baseUrl` must be present.
+- `models.providers.<provider>.api` must be present.
+- `models.providers.<provider>.models[]` must include the selected model ID.
+- `agents.defaults.model.primary` must match `<provider>/<model-id>`.
+- If preserving existing channel config, fetch current config first and merge intentionally before POSTing.
+
+Current channel examples:
+
+```json
+{
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "token": "7123456789:AAF-YOUR-BOT-TOKEN",
+      "dmPolicy": "pairing"
+    },
+    "whatsapp": {
+      "enabled": true
+    }
+  }
+}
+```
+
+Telegram needs a BotFather token. WhatsApp uses QR/pairing at runtime and should not ask for a password.
+
+## Skills
+
+Current checked-in skills:
+
+```text
+portable/skills-cn/*/SKILL.md
+```
+
+Current setup behavior:
+- `portable/setup.sh` copies `portable/skills-cn/*` into `portable/app/core/node_modules/openclaw/skills/`.
+- `install/install.sh` and `install/install.ps1` also embed/write China-oriented skills.
+
+
+
+Do not claim SG skills are preinstalled until the directory and setup scripts exist.
+
+## SG Product Rules
+
+Branding:
+- User-facing product name: `SG Claw`
+- Code/package/path name: `sg-claw`
+- Avoid new `U-Claw` copy unless preserving legacy context.
+
+Channels:
+- SG default channels should be WhatsApp and Telegram.
+- Do not add QQ, Feishu, WeCom, or WeChat Enterprise to SG onboarding unless explicitly requested.
+
+
+
+## Distribution Modules
+
+```text
+portable/       USB content skeleton plus setup scripts
+u-claw-app/     Electron desktop app variant
+bootable/       Ventoy/Ubuntu bootable Linux USB module
+install/        One-line network install scripts
+usb-release/    Release/output-style USB copy
+```
+
+These modules are related but not identical. If you change config paths, runtime paths, skills, or branding, check all relevant modules.
 
 ## Development Commands
 
 ```bash
-# Portable version — build dev copy
-cd portable && bash setup.sh    # Downloads Node.js v22 + OpenClaw + QQ plugin to app/
-bash Mac-Start.command          # Launch (Mac ARM64 only currently)
+# Portable development setup
+cd portable
+bash setup.sh
+bash Mac-Start.command
 
-# Copy to USB drive
-cp -R portable/ /Volumes/YOUR_USB/U-Claw/
+# Electron app
+cd u-claw-app
+bash setup.sh
+npm run dev
+npm run build:mac-arm64
 
-# Electron desktop app
-cd u-claw-app && bash setup.sh  # One-click: Node.js + Electron + deps (China mirrors)
-npm run dev                     # Dev mode
-npm run build:mac-arm64         # Build Mac ARM64 DMG
-npm run build:win               # Build Windows NSIS + portable
-
-# Bootable Linux USB (run on Windows PowerShell as Admin)
-cd bootable
-.\1-prepare-usb.ps1             # Write Ventoy to USB (formats drive!)
-.\2-download-iso.ps1            # Download Ubuntu ISO (~5.8GB, China mirrors)
-.\3-create-persistence.ps1      # Create 20GB ext4 persistence image
-.\4-copy-to-usb.ps1             # Copy ISO + persistence + scripts to USB
+# Search for stale China/U-Claw references
+rg -n "U-Claw|u-claw|China|中国|QQ|Feishu|WeChat|WeCom|skills-cn|Onboarding.html|skills-sg" .
 ```
 
-Testing should be done in a separate folder or directly on USB. This repo stays clean (no node_modules, no app/ runtime).
+## What Not To Commit
 
-## Architecture
+Never commit runtime dependencies, user data, or build artifacts:
+- `portable/app/`
+- `portable/data/`
+- `u-claw-app/node_modules/`
+- `u-claw-app/release/`
+- `u-claw-app/resources/runtime/`
+- `*.dmg`
+- `*.exe`
+- `*.blockmap`
 
-```
-portable/           THE USB content (= repo + setup.sh downloads)
-                    Scripts, HTML pages, setup.sh
-                    app/core/ (OpenClaw) + app/runtime/ (Node.js) — downloaded by setup.sh
-                    data/.openclaw/openclaw.json — user config (on USB, portable)
-                    Mac-Install.command / Windows-Install.bat — install to computer from USB
-                    skills-cn/ — 10 个中国本地化技能（小红书、微博、B站等）
+## Platform Status
 
-u-claw-app/         Electron desktop app (main.js ~400 lines)
-                    setup.sh / setup.bat for one-click dev environment
-                    Bundles Node.js in resources/runtime/node-{platform}-{arch}
-                    Config stored in app.getPath('userData')/.openclaw/
+Current repo status:
+- Mac Apple Silicon: main tested path
+- Mac Intel: intended path via `node-mac-x64`
+- Windows x64: present but still marked in-development in existing docs
+- Linux x64: bootable module under `bootable/`
 
-bootable/           Linux 可启动 U 盘模块（完全独立，不依赖其他模块）
-                    4 步 PowerShell 脚本 (Windows 上制作)
-                    Ventoy 1.0.99 + Ubuntu 24.04 LTS + casper-rw 持久化
-                    linux-setup/ — setup-openclaw.sh 安装到 /opt/u-claw/
-                    独立仓库镜像: github.com/dongsheng123132/u-claw-linux
-
-install/            一键在线安装模块（curl | bash / irm | iex）
-                    install.sh (Mac/Linux) + install.ps1 (Windows)
-                    7 步流程: 系统检测 → Node.js → OpenClaw → QQ插件 → 技能 → 模型配置 → 启动脚本
-                    安装到 ~/.uclaw/，与 Mac-Install.command 结果相同
-
-```
-
-> **Note**: 官网 (u-claw.org) 已拆分到独立私有仓库 [u-claw.org](https://github.com/dongsheng123132/u-claw.org)，本仓库不再包含 website/ 和 vercel.json。
-> **虾航**: AI人导航站 (nav.u-claw.org) 在独立私有仓库 [xiahang](https://github.com/dongsheng123132/xiahang)。
-
-Both portable and desktop versions auto-find a free port in range 18789–18799 and start the OpenClaw gateway. On first run, they detect whether a model is configured — if not, they open Config.html; otherwise, they open the dashboard.
-
-## Key Technical Details
-
-- **Node.js discovery**: Portable looks at `app/runtime/node-mac-arm64/bin/node`; Electron looks at `resources/runtime/node-{platform}-{arch}` then falls back to system `node`
-- **China mirrors**: All downloads use `npmmirror.com` — Node.js binaries from `npmmirror.com/mirrors/node`, npm packages from `registry.npmmirror.com`
-- **Environment variables**: `OPENCLAW_HOME`, `OPENCLAW_STATE_DIR`, `OPENCLAW_CONFIG_PATH` control where OpenClaw reads config
-- **macOS quarantine**: Mac scripts run `xattr -rd com.apple.quarantine` to remove Gatekeeper blocks
-- **Config format**: `{"gateway":{"mode":"local","auth":{"token":"uclaw"}},"models":{"mode":"merge","providers":{"xxx":{...}}},"agents":{"defaults":{"model":{"primary":"provider/model"}}}}`
-- **Config hot-reload**: OpenClaw watches `openclaw.json` and applies changes without restart
-
-## What NOT to Commit
-
-Never commit runtime dependencies or build artifacts. These are all in .gitignore:
-- `portable/app/` and `portable/data/` (runtime + user data)
-- `u-claw-app/node_modules/`, `u-claw-app/release/`, `u-claw-app/resources/runtime/`
-- `*.dmg`, `*.exe`, `*.blockmap`
-
-Release artifacts go to GitHub Releases, not the repo.
-
-## Branding Rules
-
-- Use only official `openclaw` (not `openclaw-cn` or any community fork)
-- All npm installs reference `openclaw@latest` (official package)
-- External links point to `u-claw.org` (our site) or `github.com/openclaw/openclaw` (upstream)
-- No references to competitor products (Qclaw, AutoClaw) in any tracked files
-- Skill marketplace links point to `skillhub.tencent.com` or `github.com/openclaw/clawhub`
-
-## Platform Support Status
-
-- Mac Apple Silicon (ARM64): ✅ Working
-- Mac Intel (x64): ✅ Working（portable 需先运行 setup.sh 下载 node-mac-x64）
-- Windows x64: 🚧 In development
-- Linux x64 (Bootable USB): ✅ `bootable/` 目录 + 独立仓库 [u-claw-linux](https://github.com/dongsheng123132/u-claw-linux)
-
-## Bootable Linux Key Details
-
-- **制作环境**: Windows 10/11 + PowerShell (Admin)，4 步脚本
-- **U 盘要求**: 32GB+ USB 3.0
-- **技术栈**: Ventoy 1.0.99 引导 → Ubuntu 24.04 ISO → casper-rw 持久化 → OpenClaw 安装到 /opt/u-claw/
-- **国内镜像**: ISO 下载走清华/阿里/中科大，Node.js 和 npm 走 npmmirror.com
-- **Linux 环境变量**: `OPENCLAW_HOME=/opt/u-claw/data/.openclaw`
-- **bootable/ 完全独立**: 不引用 portable/、u-claw-app/ 的任何文件，修改互不影响
-- **同步**: bootable/ 内容与 u-claw-linux 仓库保持一致，改一边要记得同步另一边
