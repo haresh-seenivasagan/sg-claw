@@ -98,18 +98,20 @@ function getConfig() {
 }
 
 function registerBundledMcpServers() {
-  const resourcesPath = app.isPackaged
-    ? path.join(process.resourcesPath, 'resources')
-    : path.join(__dirname, '..', 'resources');
-  const credsPath = path.join(resourcesPath, '..', 'config', 'google-credentials.json');
-  const mcpBin = path.join(userDataPath, '..', 'core', 'node_modules', '@cocal', 'google-calendar-mcp', 'build', 'index.js');
+  const nodeBin = getNodeBin();
+  // MCP package lives alongside openclaw in node_modules
+  const mcpBin = path.join(path.dirname(openclawPath), '@cocal', 'google-calendar-mcp', 'build', 'index.js');
+  // Credentials shipped in config/ next to the app resources
+  const credsPath = isDev
+    ? path.join(__dirname, '..', 'config', 'google-credentials.json')
+    : path.join(process.resourcesPath, 'config', 'google-credentials.json');
   if (!fs.existsSync(credsPath) || !fs.existsSync(mcpBin)) return;
   try {
     const config = getConfig();
     if (!config.mcp) config.mcp = {};
     if (!config.mcp.servers) config.mcp.servers = {};
     config.mcp.servers['google-calendar'] = {
-      command: process.execPath,
+      command: nodeBin,
       args: [mcpBin],
       env: { GOOGLE_OAUTH_CREDENTIALS: credsPath }
     };
