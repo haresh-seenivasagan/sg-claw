@@ -141,7 +141,7 @@ for i in $(seq 1 30); do
         # Open Dashboard
         open "http://127.0.0.1:$PORT/#token=uclaw" 2>/dev/null || true
         # Open Config Center
-        open "http://127.0.0.1:18788/" 2>/dev/null || true
+        open "http://127.0.0.1:18788/?port=$PORT" 2>/dev/null || true
         break
     fi
 done
@@ -149,7 +149,7 @@ done
 echo -e "  ${GREEN}════════════════════════════════${NC}"
 echo -e "  ${GREEN}SG Claw is running!${NC}"
 echo -e "  ${GREEN}   Dashboard:     http://127.0.0.1:$PORT/#token=uclaw${NC}"
-echo -e "  ${GREEN}   Config Center: http://127.0.0.1:18788/${NC}"
+echo -e "  ${GREEN}   Config Center: http://127.0.0.1:18788/?port=$PORT${NC}"
 echo ""
 echo -e "  ${YELLOW}Press Ctrl+C to stop${NC}"
 echo -e "  ${GREEN}════════════════════════════════${NC}"

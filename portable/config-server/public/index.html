@@ -1064,7 +1064,28 @@ const $$ = sel => document.querySelectorAll(sel);
 
 function getPort() {
   const p = new URLSearchParams(location.search).get('port');
-  return p || '18789';
+  if (p) {
+    try { localStorage.setItem('sgclaw.gatewayPort', p); } catch (_) {}
+    return p;
+  }
+  try { return localStorage.getItem('sgclaw.gatewayPort') || '18789'; } catch (_) {}
+  return '18789';
+}
+function getDashboardUrl() {
+  return 'http://127.0.0.1:' + getPort() + '/#token=uclaw';
+}
+async function waitForDashboardReady(timeoutMs = 12000) {
+  const start = Date.now();
+  const url = 'http://127.0.0.1:' + getPort() + '/';
+  while (Date.now() - start < timeoutMs) {
+    try {
+      await fetch(url, { mode: 'no-cors', cache: 'no-store' });
+      return true;
+    } catch (_) {
+      await new Promise(resolve => setTimeout(resolve, 700));
+    }
+  }
+  return false;
 }
 function showToast(msg, isError) {
   const t = $('#toast');
@@ -1260,7 +1281,7 @@ $('#finishBtn').addEventListener('click', async () => {
   fireConfetti();
 });
 $('#goDashboard').addEventListener('click', () => {
-  window.open('http://127.0.0.1:' + getPort() + '/#token=uclaw', '_blank');
+  window.open(getDashboardUrl(), '_blank');
 });
 
 function buildOpenClawConfig() {
@@ -1343,6 +1364,11 @@ async function saveConfig() {
     if (next.agents?.defaults?.model?.primary &&
         persisted.agents?.defaults?.model?.primary !== next.agents.defaults.model.primary) {
       throw new Error('config rejected by OpenClaw');
+    }
+    if (next.channels) {
+      $('#doneSummary').textContent = 'Saved. Applying chat channel settings...';
+      await new Promise(resolve => setTimeout(resolve, 3500));
+      await waitForDashboardReady();
     }
     const summary = renderDoneSummary();
     $('#doneSummary').innerHTML = summary;

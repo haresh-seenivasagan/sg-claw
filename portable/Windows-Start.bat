@@ -107,7 +107,7 @@ for /l %%i in (1,1,30) do (
     timeout /t 1 /nobreak >nul
 )
 echo   [WARN] Gateway did not respond yet. Opening config center only.
-start "" http://127.0.0.1:18788/
+start "" http://127.0.0.1:18788/?port=%PORT%
 echo   Keep this window open while SG Claw starts.
 pause
 goto end
@@ -115,7 +115,7 @@ goto end
 :gateway_ready
 echo   Opening Dashboard and Config Center...
 start "" http://127.0.0.1:%PORT%/#token=uclaw
-start "" http://127.0.0.1:18788/
+start "" http://127.0.0.1:18788/?port=%PORT%
 
 echo   SG Claw is running.
 echo   DO NOT close this window while using SG Claw!
