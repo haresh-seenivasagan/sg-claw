@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SG-Claw · Welcome lah</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --sky-1: #FFD8B5;
+  --sky-2: #FFA47A;
+  --sky-3: #FF6B8B;
+  --sea-1: #4DD0E1;
+  --sea-2: #1B7E96;
+  --sea-3: #0E3A52;
+  --sun: #FFE38A;
+  --island: #FFF8EE;
+  --accent: #ED2E38;
+  --gold: #FFC857;
+  --ink: #11243A;
+  --ink-2: #45607A;
+  --card: rgba(255,255,255,0.94);
+  --card-stroke: rgba(255,255,255,0.65);
+  --shadow-lg: 0 30px 80px rgba(11, 36, 58, 0.28), 0 8px 24px rgba(11,36,58,0.12);
+  --shadow-md: 0 12px 28px rgba(11,36,58,0.16);
+  --radius: 22px;
+}
+html, body { height: 100%; }
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: var(--ink);
+  background: linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 35%, var(--sky-3) 60%, var(--sea-1) 78%, var(--sea-2) 92%, var(--sea-3) 100%);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ----- Sky scenery ----- */
+.scene {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.sun {
+  position: absolute;
+  left: 50%;
+  top: 60%;
+  transform: translate(-50%, -50%);
+  width: 220px; height: 220px;
+  background: radial-gradient(circle at 50% 45%, #FFF5C2 0%, var(--sun) 45%, rgba(255,196,108,0) 72%);
+  border-radius: 50%;
+  filter: blur(0.4px);
+  animation: sunRise 2.4s cubic-bezier(.2,.7,.2,1) forwards;
+  opacity: 0;
+}
+@keyframes sunRise {
+  0%   { top: 88%; opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+  60%  { opacity: 1; }
+  100% { top: 32%; opacity: 0.95; transform: translate(-50%, -50%) scale(1); }
+}
+.cloud {
+  position: absolute;
+  background: rgba(255,255,255,0.8);
+  border-radius: 999px;
+  filter: blur(0.5px);
+  box-shadow: 0 6px 16px rgba(255,255,255,0.4) inset;
+  opacity: 0;
+  animation: cloudDrift 24s linear infinite, fadeIn 1.6s 0.6s forwards;
+}
+.cloud.c1 { width: 180px; height: 36px; top: 14%; left: -200px; animation-delay: 0s, 0.6s; }
+.cloud.c2 { width: 130px; height: 28px; top: 22%; left: -160px; animation-delay: -8s, 0.9s; opacity: 0; }
+.cloud.c3 { width: 220px; height: 40px; top: 8%;  left: -260px; animation-delay: -16s, 1.2s; opacity: 0; }
+@keyframes cloudDrift {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(120vw); }
+}
+@keyframes fadeIn { to { opacity: 1; } }
+
+/* ----- Sea + waves ----- */
+.sea-band {
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 0;
+  height: 38vh;
+  background: linear-gradient(180deg, rgba(77,208,225,0) 0%, rgba(27,126,150,0.55) 35%, var(--sea-3) 100%);
+  pointer-events: none;
+}
+.waves {
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 0;
+  height: 38vh;
+  pointer-events: none;
+}
+.waves svg {
+  position: absolute;
+  width: 200%;
+  height: 100%;
+}
+.waves .w1 { bottom: 18vh; opacity: 0.55; animation: waveSlide 14s linear infinite; }
+.waves .w2 { bottom: 8vh;  opacity: 0.75; animation: waveSlide 9s  linear infinite reverse; }
+.waves .w3 { bottom: 0;    opacity: 1;    animation: waveSlide 6s  linear infinite; }
+@keyframes waveSlide {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ----- Singapore island silhouette ----- */
+.island-wrap {
+  position: absolute;
+  left: 50%;
+  bottom: 18vh;
+  transform: translateX(-50%);
+  width: min(720px, 92vw);
+  pointer-events: none;
+  opacity: 0;
+  animation: islandRise 2.2s 0.6s cubic-bezier(.2,.7,.2,1) forwards;
+}
+@keyframes islandRise {
+  0%   { transform: translate(-50%, 60px); opacity: 0; }
+  100% { transform: translate(-50%, 0);    opacity: 1; }
+}
+.island-wrap svg { width: 100%; height: auto; display: block; filter: drop-shadow(0 18px 24px rgba(11,36,58,0.35)); }
+
+.boat {
+  position: absolute;
+  bottom: 9vh;
+  left: -10%;
+  width: 56px;
+  opacity: 0;
+  animation: boatSail 32s linear 1.2s infinite, fadeIn 1s 1.2s forwards;
+}
+@keyframes boatSail {
+  0%   { left: -10%; }
+  100% { left: 110%; }
+}
+.boat svg { width: 100%; }
+.boat .bob { animation: bob 2.4s ease-in-out infinite; transform-origin: center; }
+@keyframes bob {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50%      { transform: translateY(-3px) rotate(2deg); }
+}
+
+.bird {
+  position: absolute;
+  font-size: 22px;
+  color: rgba(255,255,255,0.85);
+  opacity: 0;
+  animation: birdFly 18s linear infinite, fadeIn 1s 1.4s forwards;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.bird.b1 { top: 20%; left: -5%; animation-delay: 0s, 1.4s; }
+.bird.b2 { top: 26%; left: -12%; animation-delay: -6s, 1.7s; font-size: 16px; }
+@keyframes birdFly {
+  0%   { left: -5%;  transform: translateY(0); }
+  50%  { transform: translateY(-12px); }
+  100% { left: 105%; transform: translateY(0); }
+}
+
+/* ----- Main card ----- */
+.stage {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 24px 20px 36px;
+}
+.brand {
+  position: absolute;
+  top: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  font-size: 1.05rem;
+}
+.brand .badge {
+  width: 30px; height: 30px; border-radius: 9px;
+  background: var(--accent);
+  color: white;
+  display: grid; place-items: center;
+  font-family: 'Fraunces', serif;
+  font-weight: 700;
+  box-shadow: var(--shadow-md);
+}
+.brand .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+
+.card {
+  background: var(--card);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--card-stroke);
+  border-radius: var(--radius);
+  width: min(640px, 100%);
+  padding: 32px 30px 28px;
+  box-shadow: var(--shadow-lg);
+  margin-bottom: 8px;
+  animation: cardUp 0.8s 0.4s cubic-bezier(.2,.7,.2,1) backwards;
+}
+@keyframes cardUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+
+.steps-bar { display: flex; align-items: center; gap: 6px; margin-bottom: 22px; }
+.tick {
+  flex: 1; height: 4px; border-radius: 999px;
+  background: rgba(17,36,58,0.10);
+  overflow: hidden;
+  position: relative;
+}
+.tick.done { background: var(--accent); }
+.tick.cur::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, var(--accent), var(--gold));
+  animation: tickFill 0.6s ease forwards;
+  width: 0%;
+}
+@keyframes tickFill { to { width: 100%; } }
+
+.eyebrow {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+h1 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(1.7rem, 3.4vw, 2.4rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+h1 em { font-style: italic; color: var(--accent); font-weight: 600; }
+.lede { color: var(--ink-2); font-size: 1rem; line-height: 1.55; margin-bottom: 22px; }
+
+.btn-row { display: flex; gap: 10px; margin-top: 8px; align-items: center; flex-wrap: wrap; }
+.btn {
+  appearance: none; border: 0; cursor: pointer;
+  padding: 13px 22px;
+  border-radius: 14px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.97rem;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-primary { background: var(--accent); color: white; box-shadow: 0 8px 18px rgba(237,46,56,0.32); }
+.btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(237,46,56,0.38); }
+.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
+.btn-ghost { background: transparent; color: var(--ink); }
+.btn-ghost:hover { background: rgba(17,36,58,0.06); }
+.btn-soft { background: rgba(17,36,58,0.06); color: var(--ink); }
+.btn-soft:hover { background: rgba(17,36,58,0.10); }
+
+.spacer { flex: 1; }
+
+/* Cards grid for models / use cases */
+.grid { display: grid; gap: 12px; margin-bottom: 8px; }
+.grid-2 { grid-template-columns: 1fr 1fr; }
+.grid-1 { grid-template-columns: 1fr; }
+@media (max-width: 540px) { .grid-2 { grid-template-columns: 1fr; } }
+
+.pick {
+  position: relative;
+  text-align: left;
+  background: white;
+  border: 2px solid rgba(17,36,58,0.08);
+  border-radius: 16px;
+  padding: 14px 14px 14px 16px;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.15s, box-shadow 0.2s;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.pick:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: rgba(17,36,58,0.2); }
+.pick.selected { border-color: var(--accent); background: linear-gradient(180deg, #FFF8F4 0%, white 100%); box-shadow: 0 10px 22px rgba(237,46,56,0.18); }
+.pick .ico { font-size: 1.7rem; line-height: 1; flex: 0 0 auto; }
+.pick .body h4 { font-size: 0.98rem; margin-bottom: 2px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.pick .body p { color: var(--ink-2); font-size: 0.84rem; line-height: 1.4; }
+.tag { font-size: 0.66rem; padding: 2px 8px; border-radius: 999px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+.tag.rec { background: rgba(237,46,56,0.12); color: var(--accent); }
+.tag.free { background: rgba(56,176,0,0.12); color: #2e8b00; }
+.tag.fast { background: rgba(124,58,237,0.12); color: #6d28d9; }
+.tag.cn { background: rgba(31,111,235,0.12); color: #1f6feb; }
+.pick .check {
+  position: absolute; top: 10px; right: 12px;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--accent); color: white;
+  display: none; align-items: center; justify-content: center;
+  font-size: 0.78rem; font-weight: 700;
+}
+.pick.selected .check { display: flex; }
+
+/* form */
+.field { margin-bottom: 14px; }
+.field label { display: block; font-size: 0.86rem; font-weight: 600; margin-bottom: 6px; color: var(--ink); }
+.field input {
+  width: 100%; padding: 12px 14px;
+  border: 1.5px solid rgba(17,36,58,0.14);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 0.96rem;
+  background: white;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.field input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(237,46,56,0.12); }
+.hint { color: var(--ink-2); font-size: 0.8rem; line-height: 1.5; margin-top: 6px; }
+.hint a { color: var(--accent); text-decoration: none; font-weight: 600; }
+.hint a:hover { text-decoration: underline; }
+
+/* messaging cards */
+.chan {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+}
+@media (max-width: 540px) { .chan { grid-template-columns: 1fr; } }
+.chan .pick { flex-direction: column; align-items: flex-start; min-height: 130px; }
+.chan .pick .ico { font-size: 2rem; }
+
+/* done step */
+.done-wrap { text-align: center; padding: 8px 0 6px; }
+.done-emoji { font-size: 3rem; animation: pop 0.6s 0.1s cubic-bezier(.2,1.4,.4,1) backwards; }
+@keyframes pop { from { transform: scale(0.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* tiny screens */
+@media (max-width: 520px) {
+  .card { padding: 24px 20px 22px; border-radius: 18px; }
+  .island-wrap { bottom: 22vh; }
+}
+
+/* confetti */
+.confetti { position: fixed; inset: 0; pointer-events: none; z-index: 5; }
+.confetti i {
+  position: absolute; top: -10px;
+  width: 8px; height: 14px; border-radius: 2px;
+  animation: fall linear forwards;
+}
+@keyframes fall {
+  to { transform: translateY(110vh) rotate(720deg); opacity: 0.8; }
+}
+
+/* Multiselect tip */
+.row-tip { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.row-tip .small { color: var(--ink-2); font-size: 0.84rem; }
+.linklike { background: none; border: 0; color: var(--accent); font-weight: 700; cursor: pointer; font-family: inherit; font-size: 0.84rem; }
+.linklike:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<!-- Scene -->
+<div class="scene" aria-hidden="true">
+  <div class="sun"></div>
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+  <div class="cloud c3"></div>
+  <div class="bird b1">~</div>
+  <div class="bird b2">~</div>
+
+  <div class="island-wrap">
+    <!-- Stylised Singapore skyline rising from the sea: Marina Bay Sands + ArtScience Museum + Merlion + skyline -->
+    <svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="islandFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#FFF8EE"/>
+          <stop offset="1" stop-color="#F1DCB7"/>
+        </linearGradient>
+        <linearGradient id="towerFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#ffffff"/>
+          <stop offset="1" stop-color="#FFE0C8"/>
+        </linearGradient>
+      </defs>
+      <!-- Far skyline -->
+      <g opacity="0.55" fill="#3D6B85">
+        <rect x="60"  y="155" width="22" height="42"/>
+        <rect x="86"  y="140" width="18" height="57"/>
+        <rect x="108" y="148" width="26" height="49"/>
+        <rect x="138" y="130" width="20" height="67"/>
+        <rect x="162" y="146" width="22" height="51"/>
+        <rect x="540" y="142" width="22" height="55"/>
+        <rect x="566" y="158" width="18" height="39"/>
+        <rect x="588" y="148" width="24" height="49"/>
+        <rect x="616" y="138" width="20" height="59"/>
+        <rect x="640" y="152" width="22" height="45"/>
+      </g>
+      <!-- ArtScience Museum (lotus) -->
+      <g transform="translate(210,128)" fill="url(#towerFill)" stroke="#0E3A52" stroke-width="1.2">
+        <path d="M0,52 C2,34 14,18 26,12 C28,6 34,4 36,12 C48,18 60,34 62,52 Z"/>
+        <path d="M30,12 C30,4 32,0 36,0 C40,0 42,4 42,12" fill="none"/>
+      </g>
+      <!-- Merlion (cute) -->
+      <g transform="translate(285,140)" stroke="#0E3A52" stroke-width="1.2">
+        <ellipse cx="14" cy="46" rx="18" ry="6" fill="#3D6B85" opacity="0.4" stroke="none"/>
+        <path d="M0,44 Q4,10 22,12 Q34,14 30,28 L34,28 L30,32 L34,36 L28,36 L26,44 Z" fill="#FFFFFF"/>
+        <circle cx="22" cy="18" r="2" fill="#11243A" stroke="none"/>
+        <path d="M28,22 Q34,18 38,22 Q34,26 28,24 Z" fill="#7DD3FC" stroke="#0E3A52"/>
+      </g>
+      <!-- Marina Bay Sands 3 towers -->
+      <g transform="translate(360,60)" fill="url(#towerFill)" stroke="#0E3A52" stroke-width="1.2">
+        <path d="M0,140 L14,0 L28,140 Z"/>
+        <path d="M58,140 L72,0 L86,140 Z"/>
+        <path d="M116,140 L130,0 L144,140 Z"/>
+      </g>
+      <!-- Sky park slab on top of MBS -->
+      <g transform="translate(345,52)" fill="#FFFFFF" stroke="#0E3A52" stroke-width="1.4">
+        <path d="M0,8 Q90,-12 180,8 L180,18 Q90,2 0,18 Z"/>
+        <circle cx="14" cy="13" r="3" fill="#7DD3FC"/>
+        <circle cx="170" cy="13" r="3" fill="#7DD3FC"/>
+      </g>
+      <!-- Tree -->
+      <g transform="translate(176,170)" fill="#2E7D32" stroke="#0E3A52" stroke-width="1">
+        <rect x="6" y="14" width="3" height="10" fill="#5D4037"/>
+        <circle cx="7.5" cy="10" r="9"/>
+      </g>
+      <g transform="translate(540,170)" fill="#2E7D32" stroke="#0E3A52" stroke-width="1">
+        <rect x="6" y="14" width="3" height="10" fill="#5D4037"/>
+        <circle cx="7.5" cy="10" r="9"/>
+      </g>
+      <!-- Island base -->
+      <path d="M0,200 C80,180 160,194 260,196 C360,198 440,184 540,192 C620,198 680,196 720,200 L720,220 L0,220 Z" fill="url(#islandFill)" stroke="#0E3A52" stroke-width="1.2"/>
+    </svg>
+  </div>
+
+  <div class="boat">
+    <svg viewBox="0 0 64 40">
+      <g class="bob">
+        <path d="M4,28 L60,28 L52,38 L12,38 Z" fill="#ED2E38" stroke="#0E3A52" stroke-width="1.2"/>
+        <rect x="30" y="6" width="2" height="24" fill="#0E3A52"/>
+        <path d="M32,8 L32,26 L48,22 Z" fill="#FFC857" stroke="#0E3A52" stroke-width="1"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- Sea -->
+  <div class="sea-band"></div>
+  <div class="waves">
+    <svg class="w1" viewBox="0 0 1440 80" preserveAspectRatio="none">
+      <path d="M0,40 C200,80 400,0 720,40 C1040,80 1240,0 1440,40 L1440,80 L0,80 Z" fill="#1B7E96"/>
+      <path d="M1440,40 C1640,80 1840,0 2160,40 C2480,80 2680,0 2880,40 L2880,80 L1440,80 Z" fill="#1B7E96"/>
+    </svg>
+    <svg class="w2" viewBox="0 0 1440 80" preserveAspectRatio="none">
+      <path d="M0,50 C220,20 420,80 720,50 C1020,20 1240,80 1440,50 L1440,80 L0,80 Z" fill="#0E3A52"/>
+      <path d="M1440,50 C1660,20 1860,80 2160,50 C2460,20 2680,80 2880,50 L2880,80 L1440,80 Z" fill="#0E3A52"/>
+    </svg>
+    <svg class="w3" viewBox="0 0 1440 80" preserveAspectRatio="none">
+      <path d="M0,60 C240,30 460,90 720,60 C980,30 1200,90 1440,60 L1440,80 L0,80 Z" fill="#072031"/>
+      <path d="M1440,60 C1680,30 1900,90 2160,60 C2420,30 2640,90 2880,60 L2880,80 L1440,80 Z" fill="#072031"/>
+    </svg>
+  </div>
+</div>
+
+<!-- Stage / Card -->
+<main class="stage">
+  <div class="brand">
+    <div class="badge">S</div>
+    <span>SG-Claw</span>
+    <span class="dot"></span>
+    <span style="color: var(--ink-2); font-weight: 500;">your local AI sidekick</span>
+  </div>
+
+  <section class="card" id="card">
+    <div class="steps-bar" id="stepsBar"></div>
+    <div id="slot"></div>
+  </section>
+</main>
+
+<div class="confetti" id="confetti" aria-hidden="true"></div>
+
+<script>
+const TOTAL_STEPS = 6; // 0..5
+let state = {
+  step: 0,
+  model: null,
+  apiKey: '',
+  channels: { whatsapp: false, telegram: false, skipped: false },
+  useCases: new Set(),
+};
+
+const MODELS = [
+  { id: 'deepseek',  name: 'DeepSeek',  emoji: '🐬', tag: 'rec',  tagText: 'Recommended', desc: 'Cheapest & strong at coding. Pay-as-you-use.', signup: 'https://platform.deepseek.com/api_keys' },
+  { id: 'claude',    name: 'Claude',    emoji: '🌟', tag: 'fast', tagText: 'Smartest',    desc: 'Best reasoning. Great for writing & advice.',   signup: 'https://console.anthropic.com/' },
+  { id: 'qwen',      name: 'Qwen',      emoji: '🌏', tag: 'free', tagText: 'Free tier',   desc: 'Generous free credits. Good Chinese support.',  signup: 'https://dashscope.console.aliyun.com/' },
+  { id: 'kimi',      name: 'Kimi',      emoji: '📚', tag: 'cn',   tagText: 'Long docs',   desc: '200K context — great for long PDFs/articles.',  signup: 'https://platform.moonshot.cn/' },
+];
+
+const USE_CASES = [
+  { id: 'hawker',  emoji: '🍜', name: 'Hawker Hunter',  desc: 'Find best stalls, dish ideas, halal/veg filter.', skills: ['hawker-hunter'] },
+  { id: 'commute', emoji: '🚇', name: 'Kaypoh Commute', desc: 'MRT/bus help, ERP, weather-aware travel tips.',   skills: ['kaypoh-commute'] },
+  { id: 'bto',     emoji: '🏠', name: 'BTO Buddy',      desc: 'BTO/resale, grants, neighbourhood scoring.',      skills: ['bto-buddy'] },
+  { id: 'reply',   emoji: '💬', name: 'Auntie Reply',   desc: 'Draft WhatsApp/TG msgs · EN↔CN/Malay/Tamil.',     skills: ['auntie-reply'] },
+  { id: 'kiasu',   emoji: '💰', name: 'Kiasu Saver',    desc: 'Compare grocery prices, vouchers, telco plans.',  skills: ['kiasu-saver'] },
+];
+
+const slot = document.getElementById('slot');
+const bar = document.getElementById('stepsBar');
+
+function renderStepsBar() {
+  bar.innerHTML = '';
+  for (let i = 1; i < TOTAL_STEPS; i++) {
+    const t = document.createElement('div');
+    t.className = 'tick' + (i < state.step ? ' done' : (i === state.step ? ' cur' : ''));
+    bar.appendChild(t);
+  }
+}
+
+function go(n) {
+  state.step = n;
+  renderStepsBar();
+  render();
+}
+
+function render() {
+  switch (state.step) {
+    case 0: return renderHero();
+    case 1: return renderModel();
+    case 2: return renderApiKey();
+    case 3: return renderChannels();
+    case 4: return renderUseCases();
+    case 5: return renderDone();
+  }
+}
+
+function renderHero() {
+  bar.style.display = 'none';
+  slot.innerHTML = `
+    <div class="eyebrow">Welcome to SG-Claw</div>
+    <h1>Hello, <em>lah</em>! Let's set up your<br>local AI sidekick.</h1>
+    <p class="lede">Pick a model, plug in a key, choose a few daily helpers — done in under 2 minutes. Everything runs from this drive, your keys stay yours.</p>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="go(1)">Let's go →</button>
+      <button class="btn btn-ghost" onclick="window.location='Welcome.html'">I've done this before</button>
+    </div>
+  `;
+}
+
+function renderModel() {
+  bar.style.display = 'flex';
+  slot.innerHTML = `
+    <div class="eyebrow">Step 1 of 5</div>
+    <h1>Pick your <em>brain</em>.</h1>
+    <p class="lede">Each model has its own personality. You can change this anytime.</p>
+    <div class="grid grid-2" id="modelGrid"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="go(0)">← Back</button>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" id="next" disabled onclick="go(2)">Next →</button>
+    </div>
+  `;
+  const g = document.getElementById('modelGrid');
+  MODELS.forEach(m => {
+    const el = document.createElement('button');
+    el.type = 'button';
+    el.className = 'pick' + (state.model === m.id ? ' selected' : '');
+    el.innerHTML = `
+      <span class="ico">${m.emoji}</span>
+      <div class="body">
+        <h4>${m.name} <span class="tag ${m.tag}">${m.tagText}</span></h4>
+        <p>${m.desc}</p>
+      </div>
+      <span class="check">✓</span>
+    `;
+    el.onclick = () => { state.model = m.id; renderModel(); };
+    g.appendChild(el);
+  });
+  document.getElementById('next').disabled = !state.model;
+}
+
+function renderApiKey() {
+  bar.style.display = 'flex';
+  const m = MODELS.find(x => x.id === state.model);
+  slot.innerHTML = `
+    <div class="eyebrow">Step 2 of 5</div>
+    <h1>Plug in your <em>${m.name}</em> key.</h1>
+    <p class="lede">No key yet? <a href="${m.signup}" target="_blank" style="color:var(--accent); font-weight:700; text-decoration:none;">Open ${m.name} sign-up →</a> &nbsp;Takes about a minute.</p>
+    <div class="field">
+      <label for="key">API Key</label>
+      <input id="key" type="password" autocomplete="off" placeholder="sk-..." value="${state.apiKey || ''}">
+      <div class="hint">Stored locally on this drive — never sent anywhere except ${m.name}.</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="go(1)">← Back</button>
+      <button class="btn btn-soft" onclick="state.apiKey=''; go(3);">Skip for now</button>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" id="next" onclick="commitKeyAndNext()">Next →</button>
+    </div>
+  `;
+  const inp = document.getElementById('key');
+  inp.focus();
+  inp.addEventListener('input', e => state.apiKey = e.target.value.trim());
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') commitKeyAndNext(); });
+}
+function commitKeyAndNext() {
+  const v = document.getElementById('key').value.trim();
+  state.apiKey = v;
+  go(3);
+}
+
+function renderChannels() {
+  bar.style.display = 'flex';
+  slot.innerHTML = `
+    <div class="eyebrow">Step 3 of 5</div>
+    <h1>Connect your <em>chats</em>.</h1>
+    <p class="lede">Let SG-Claw help draft replies in WhatsApp or Telegram. Optional — you can do this later.</p>
+    <div class="chan" id="chanGrid"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="go(2)">← Back</button>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" onclick="go(4)">Next →</button>
+    </div>
+  `;
+  const grid = document.getElementById('chanGrid');
+  const items = [
+    { id: 'whatsapp', emoji: '💚', name: 'WhatsApp',  desc: 'Reply drafts via WhatsApp Web.' },
+    { id: 'telegram', emoji: '✈️', name: 'Telegram',  desc: 'Bot token in 3 clicks via @BotFather.' },
+    { id: 'skipped',  emoji: '⏭️', name: 'Skip',      desc: 'No messaging — just chat with AI.' },
+  ];
+  items.forEach(it => {
+    const el = document.createElement('button');
+    el.type = 'button';
+    el.className = 'pick' + (state.channels[it.id] ? ' selected' : '');
+    el.innerHTML = `
+      <span class="ico">${it.emoji}</span>
+      <div class="body">
+        <h4>${it.name}</h4>
+        <p>${it.desc}</p>
+      </div>
+      <span class="check">✓</span>
+    `;
+    el.onclick = () => {
+      if (it.id === 'skipped') {
+        state.channels = { whatsapp: false, telegram: false, skipped: true };
+      } else {
+        state.channels.skipped = false;
+        state.channels[it.id] = !state.channels[it.id];
+      }
+      renderChannels();
+    };
+    grid.appendChild(el);
+  });
+}
+
+function renderUseCases() {
+  bar.style.display = 'flex';
+  slot.innerHTML = `
+    <div class="eyebrow">Step 4 of 5</div>
+    <h1>Pick your daily <em>helpers</em>.</h1>
+    <p class="lede">We've pre-tuned 5 SG-flavoured skills. Pick what you'll use — pre-loaded with the right tools.</p>
+    <div class="row-tip">
+      <span class="small">Tap to toggle. Recommended: pick 2–3.</span>
+      <button class="linklike" id="all">Pick all</button>
+    </div>
+    <div class="grid grid-1" id="ucGrid"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="go(3)">← Back</button>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" id="next" ${state.useCases.size === 0 ? 'disabled' : ''} onclick="finish()">Finish →</button>
+    </div>
+  `;
+  const grid = document.getElementById('ucGrid');
+  USE_CASES.forEach(u => {
+    const el = document.createElement('button');
+    el.type = 'button';
+    el.className = 'pick' + (state.useCases.has(u.id) ? ' selected' : '');
+    el.innerHTML = `
+      <span class="ico">${u.emoji}</span>
+      <div class="body">
+        <h4>${u.name}</h4>
+        <p>${u.desc}</p>
+      </div>
+      <span class="check">✓</span>
+    `;
+    el.onclick = () => {
+      if (state.useCases.has(u.id)) state.useCases.delete(u.id);
+      else state.useCases.add(u.id);
+      renderUseCases();
+    };
+    grid.appendChild(el);
+  });
+  document.getElementById('all').onclick = () => {
+    if (state.useCases.size === USE_CASES.length) state.useCases = new Set();
+    else state.useCases = new Set(USE_CASES.map(u => u.id));
+    renderUseCases();
+  };
+}
+
+async function finish() {
+  go(5);
+  await saveConfig();
+  fireConfetti();
+  setTimeout(() => { window.location = 'U-Claw.html'; }, 2400);
+}
+
+function renderDone() {
+  bar.style.display = 'flex';
+  const picked = [...state.useCases].map(id => USE_CASES.find(u => u.id === id).name).join(' · ');
+  slot.innerHTML = `
+    <div class="done-wrap">
+      <div class="done-emoji">🎉</div>
+      <h1 style="margin-top:12px;">You're <em>set</em>!</h1>
+      <p class="lede" style="margin: 10px auto 4px;">Loading your dashboard${picked ? ` with <strong>${picked}</strong>` : ''}…</p>
+    </div>
+  `;
+}
+
+async function saveConfig() {
+  try {
+    const cfg = await fetch('/api/config').then(r => r.ok ? r.json() : {}).catch(() => ({}));
+    const next = {
+      ...cfg,
+      gateway: cfg.gateway || { mode: 'local', auth: { token: 'uclaw' } },
+      models: { mode: 'merge', providers: { ...(cfg.models?.providers || {}) } },
+      agents: { defaults: { model: { primary: state.model ? `${state.model}/default` : 'deepseek/default' } } },
+      sgclaw: {
+        onboarded: true,
+        useCases: [...state.useCases],
+        channels: state.channels,
+      },
+    };
+    if (state.model && state.apiKey) {
+      next.models.providers[state.model] = { apiKey: state.apiKey };
+    }
+    await fetch('/api/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(next),
+    });
+  } catch (e) {
+    // offline preview — silently continue
+  }
+}
+
+function fireConfetti() {
+  const colors = ['#ED2E38', '#FFC857', '#4DD0E1', '#FF6B8B', '#1B7E96', '#FFFFFF'];
+  const root = document.getElementById('confetti');
+  for (let i = 0; i < 70; i++) {
+    const c = document.createElement('i');
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+    c.style.animationDuration = (1.6 + Math.random() * 1.6) + 's';
+    c.style.animationDelay = (Math.random() * 0.4) + 's';
+    c.style.transform = `rotate(${Math.random()*360}deg)`;
+    root.appendChild(c);
+    setTimeout(() => c.remove(), 4000);
+  }
+}
+
+renderStepsBar();
+render();
+</script>
+</body>
+</html>
