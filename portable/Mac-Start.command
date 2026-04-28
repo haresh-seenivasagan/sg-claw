@@ -95,6 +95,18 @@ export OPENCLAW_HOME="$DATA_DIR"
 export OPENCLAW_STATE_DIR="$STATE_DIR"
 export OPENCLAW_CONFIG_PATH="$CONFIG_FILE"
 
+# ---- 6b. Auto-register bundled MCP servers ----
+GCAL_MCP="$CORE_DIR/node_modules/@cocal/google-calendar-mcp/build/index.js"
+GCAL_CREDS="$UCLAW_DIR/config/google-credentials.json"
+if [ -f "$GCAL_CREDS" ] && [ -f "$GCAL_MCP" ] && [ -f "$CONFIG_FILE" ]; then
+    "$NODE_BIN" -e "
+      const fs=require('fs'),c=JSON.parse(fs.readFileSync('$CONFIG_FILE','utf8'));
+      if(!c.mcp)c.mcp={};if(!c.mcp.servers)c.mcp.servers={};
+      c.mcp.servers['google-calendar']={command:'$NODE_BIN',args:['$GCAL_MCP'],env:{GOOGLE_OAUTH_CREDENTIALS:'$GCAL_CREDS'}};
+      fs.writeFileSync('$CONFIG_FILE',JSON.stringify(c,null,2));
+    " 2>/dev/null && echo -e "  ${GREEN}✓${NC} Google Calendar MCP ready"
+fi
+
 # ---- 7. Check dependencies ----
 if [ ! -d "$CORE_DIR/node_modules" ]; then
     echo -e "  ${YELLOW}First run - installing dependencies...${NC}"

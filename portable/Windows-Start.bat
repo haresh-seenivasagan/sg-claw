@@ -59,6 +59,14 @@ if exist "%DATA_DIR%\config.json" if not exist "%STATE_DIR%\openclaw.json" (
     copy "%DATA_DIR%\config.json" "%STATE_DIR%\openclaw.json" >nul
 )
 
+REM Auto-register bundled MCP servers
+set "GCAL_MCP=%CORE_DIR%\node_modules\@cocal\google-calendar-mcp\build\index.js"
+set "GCAL_CREDS=%UCLAW_DIR%config\google-credentials.json"
+if exist "%GCAL_CREDS%" if exist "%GCAL_MCP%" if exist "%STATE_DIR%\openclaw.json" (
+    "%NODE_BIN%" -e "const fs=require('fs'),p=process.argv;const c=JSON.parse(fs.readFileSync(p[1],'utf8'));if(!c.mcp)c.mcp={};if(!c.mcp.servers)c.mcp.servers={};c.mcp.servers['google-calendar']={command:p[2],args:[p[3]],env:{GOOGLE_OAUTH_CREDENTIALS:p[4]}};fs.writeFileSync(p[1],JSON.stringify(c,null,2));" "%STATE_DIR%\openclaw.json" "%NODE_BIN%" "%GCAL_MCP%" "%GCAL_CREDS%" >nul 2>&1
+    echo   Google Calendar MCP ready
+)
+
 REM Check dependencies
 if not exist "%CORE_DIR%\node_modules" (
     echo   First run - installing dependencies...

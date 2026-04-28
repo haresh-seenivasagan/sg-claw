@@ -97,6 +97,28 @@ function getConfig() {
   }
 }
 
+function registerBundledMcpServers() {
+  const resourcesPath = app.isPackaged
+    ? path.join(process.resourcesPath, 'resources')
+    : path.join(__dirname, '..', 'resources');
+  const credsPath = path.join(resourcesPath, '..', 'config', 'google-credentials.json');
+  const mcpBin = path.join(userDataPath, '..', 'core', 'node_modules', '@cocal', 'google-calendar-mcp', 'build', 'index.js');
+  if (!fs.existsSync(credsPath) || !fs.existsSync(mcpBin)) return;
+  try {
+    const config = getConfig();
+    if (!config.mcp) config.mcp = {};
+    if (!config.mcp.servers) config.mcp.servers = {};
+    config.mcp.servers['google-calendar'] = {
+      command: process.execPath,
+      args: [mcpBin],
+      env: { GOOGLE_OAUTH_CREDENTIALS: credsPath }
+    };
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+  } catch (e) {
+    console.error(`[${APP_NAME}] MCP registration failed:`, e.message);
+  }
+}
+
 function hasModelConfigured() {
   const config = getConfig();
   // Check new format: agents.defaults.model.primary or env with API key or models.providers
@@ -439,6 +461,7 @@ app.whenReady().then(async () => {
 
   // Setup
   ensureConfig();
+  registerBundledMcpServers();
   createMenu();
   setupIPC();
   createWindow();
