@@ -302,6 +302,45 @@ function handleWeChatCancel(sessionKey) {
   else activeLogins.clear();
 }
 
+// ── Google Calendar MCP toggle ──────────────────────────────────────────────
+const GOOGLE_CREDS_PATH = path.join(__dirname, '../config/google-credentials.json');
+const CORE_NODE_MODULES = path.join(__dirname, '../app/core/node_modules');
+
+function getGcalMcpEntry(credsPath) {
+  const localBin = path.join(CORE_NODE_MODULES, '@cocal/google-calendar-mcp/dist/index.js');
+  if (fs.existsSync(localBin)) {
+    return { command: process.execPath, args: [localBin], env: { GOOGLE_OAUTH_CREDENTIALS: credsPath } };
+  }
+  return { command: 'npx', args: ['@cocal/google-calendar-mcp'], env: { GOOGLE_OAUTH_CREDENTIALS: credsPath } };
+}
+
+function isGcalEnabled() {
+  if (!fs.existsSync(CONFIG_PATH)) return false;
+  try {
+    const config = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf-8'));
+    return !!(config.mcp && config.mcp.servers && config.mcp.servers['google-calendar']);
+  } catch(e) { return false; }
+}
+
+function setGcalEnabled(enabled, credsPath) {
+  const configRaw = fs.existsSync(CONFIG_PATH) ? fs.readFileSync(CONFIG_PATH, 'utf-8') : '{}';
+  const config = JSON.parse(configRaw);
+  if (enabled) {
+    if (!config.mcp) config.mcp = {};
+    if (!config.mcp.servers) config.mcp.servers = {};
+    config.mcp.servers['google-calendar'] = getGcalMcpEntry(credsPath);
+  } else {
+    if (config.mcp && config.mcp.servers) {
+      delete config.mcp.servers['google-calendar'];
+      if (Object.keys(config.mcp.servers).length === 0) delete config.mcp.servers;
+      if (Object.keys(config.mcp).length === 0) delete config.mcp;
+    }
+  }
+  const dir = path.dirname(CONFIG_PATH);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2));
+}
+
 function getRequestPath(req) {
   return decodeURIComponent((req.url || '/').split('?')[0]);
 }
@@ -408,6 +447,34 @@ const server = http.createServer((req, res) => {
     const installed = fs.existsSync(path.join(INSTALLED_PLUGIN_DIR, 'openclaw.plugin.json'));
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ hasPlugin, installed }));
+    return;
+  }
+
+  // API: Google Calendar – status
+  if (requestPath === '/api/google/status' && req.method === 'GET') {
+    const hasBundledCreds = fs.existsSync(GOOGLE_CREDS_PATH);
+    writeJson(res, 200, { enabled: isGcalEnabled(), bundled_available: hasBundledCreds });
+    return;
+  }
+
+  // API: Google Calendar – enable/disable
+  if (requestPath === '/api/google/toggle' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      try {
+        const data = JSON.parse(body);
+        const credsPath = data.credentials_path || GOOGLE_CREDS_PATH;
+        if (data.enabled && !fs.existsSync(credsPath)) {
+          writeJson(res, 400, { error: 'Credentials file not found: ' + credsPath });
+          return;
+        }
+        setGcalEnabled(!!data.enabled, credsPath);
+        writeJson(res, 200, { ok: true, enabled: !!data.enabled });
+      } catch (err) {
+        writeJson(res, 500, { error: err.message });
+      }
+    });
     return;
   }
 

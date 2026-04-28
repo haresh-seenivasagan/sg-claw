@@ -49,6 +49,9 @@ usb-release/toolkit/*.msi
 usb-release/toolkit/*.tar.gz
 usb-release/toolkit/*.zip
 
+# ── OAuth credentials (shipped on USB, not in repo) ──
+portable/config/google-credentials.json
+
 # ── Environment variables ──
 .env
 .env.*

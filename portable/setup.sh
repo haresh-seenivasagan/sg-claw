@@ -131,7 +131,17 @@ PKGJSON
     echo -e "  ${GREEN}✓${NC} OpenClaw 安装完成"
 fi
 
-# ---- 3. SG Claw does not preinstall China-only chat plugins ----
+# ---- 3. Install Google Calendar MCP server ----
+if [ -d "$CORE_DIR/node_modules/@cocal/google-calendar-mcp" ]; then
+    echo -e "  ${GREEN}✓${NC} Google Calendar MCP already installed, skipping"
+else
+    echo -e "  ${CYAN}↓${NC} Installing Google Calendar MCP server..."
+    NODE_BIN="$NODE_TARGET/bin/node"
+    NPM_BIN="$NODE_TARGET/bin/npm"
+    "$NODE_BIN" "$NPM_BIN" install @cocal/google-calendar-mcp@latest --prefix "$CORE_DIR" --registry="$MIRROR" 2>/dev/null || true
+    echo -e "  ${GREEN}✓${NC} Google Calendar MCP installed"
+fi
+
 echo -e "  ${GREEN}✓${NC} SG chat defaults are WhatsApp and Telegram"
 
 # ---- 4. Install Singapore-optimized skills ----
