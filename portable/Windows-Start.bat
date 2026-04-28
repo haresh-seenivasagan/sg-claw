@@ -1,10 +1,10 @@
 ﻿@echo off
 chcp 65001 >nul 2>&1
-title U-Claw - Portable AI Agent
+title SG Claw - Portable AI Agent
 
 echo.
 echo   ========================================
-echo     U-Claw v1.1 - Portable AI Agent
+echo     SG Claw - Portable OpenClaw Assistant
 echo   ========================================
 echo.
 
@@ -62,26 +62,14 @@ if exist "%DATA_DIR%\config.json" if not exist "%STATE_DIR%\openclaw.json" (
 REM Check dependencies
 if not exist "%CORE_DIR%\node_modules" (
     echo   First run - installing dependencies...
-    echo   Using China mirror, please wait...
+    echo   Preparing bundled OpenClaw runtime...
     echo.
+    if not exist "%CORE_DIR%" mkdir "%CORE_DIR%"
     cd /d "%CORE_DIR%"
     call "%NPM_BIN%" install --registry=https://registry.npmmirror.com
     echo.
     echo   Dependencies installed!
     echo.
-)
-
-REM Auto-install WeChat plugin if available
-set "WECHAT_PLUGIN_SRC=%APP_DIR%\extensions\openclaw-weixin"
-set "WECHAT_PLUGIN_DST=%USERPROFILE%\.openclaw\extensions\openclaw-weixin"
-if exist "%WECHAT_PLUGIN_SRC%\openclaw.plugin.json" (
-    if not exist "%WECHAT_PLUGIN_DST%\openclaw.plugin.json" (
-        echo   Installing WeChat plugin...
-        mkdir "%USERPROFILE%\.openclaw\extensions" 2>nul
-        xcopy /s /e /q /y "%WECHAT_PLUGIN_SRC%" "%WECHAT_PLUGIN_DST%\" >nul
-        echo   WeChat plugin installed!
-        echo.
-    )
 )
 
 REM Find available port
@@ -99,9 +87,6 @@ if %errorlevel%==0 (
     goto :check_port
 )
 
-echo   Starting OpenClaw on port %PORT%...
-echo.
-
 REM Start Config Server in background
 echo   Starting Config Center on port 18788...
 set "CONFIG_SERVER=%UCLAW_DIR%config-server"
@@ -110,24 +95,33 @@ start /B "" "%NODE_BIN%" "%CONFIG_SERVER%\server.js" >nul 2>&1
 REM Wait for config server to start
 timeout /t 2 /nobreak >nul
 
-REM Open both Dashboard and Config Center
-echo   Opening Dashboard and Config Center...
-timeout /t 1 /nobreak >nul
-
-REM Open OpenClaw Dashboard first
-start "" http://127.0.0.1:%PORT%/#token=uclaw
-
-REM Open Config Center (Node.js web UI) second
-start "" http://127.0.0.1:18788/
-
-echo   Browsers opened. Starting OpenClaw Gateway on port %PORT%...
-echo   DO NOT close this window while using U-Claw!
-echo.
-
 cd /d "%CORE_DIR%"
 set "OPENCLAW_MJS=%CORE_DIR%\node_modules\openclaw\openclaw.mjs"
-"%NODE_BIN%" "%OPENCLAW_MJS%" gateway run --allow-unconfigured --force --port %PORT%
+echo   Starting OpenClaw Gateway on port %PORT%...
+start /B "" "%NODE_BIN%" "%OPENCLAW_MJS%" gateway run --allow-unconfigured --force --port %PORT%
 
+echo   Waiting for OpenClaw Gateway...
+for /l %%i in (1,1,30) do (
+    powershell -NoProfile -Command "try { Invoke-WebRequest -UseBasicParsing 'http://127.0.0.1:%PORT%/' -TimeoutSec 1 ^| Out-Null; exit 0 } catch { exit 1 }" >nul 2>&1
+    if not errorlevel 1 goto gateway_ready
+    timeout /t 1 /nobreak >nul
+)
+echo   [WARN] Gateway did not respond yet. Opening config center only.
+start "" http://127.0.0.1:18788/
+echo   Keep this window open while SG Claw starts.
+pause
+goto end
+
+:gateway_ready
+echo   Opening Dashboard and Config Center...
+start "" http://127.0.0.1:%PORT%/#token=uclaw
+start "" http://127.0.0.1:18788/
+
+echo   SG Claw is running.
+echo   DO NOT close this window while using SG Claw!
+echo.
+pause
+
+:end
 echo.
 echo   OpenClaw stopped.
-pause

@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>U-Claw - Loading</title>
+<title>SG Claw - Loading</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
-  font-family: -apple-system, "Microsoft YaHei", "Segoe UI", sans-serif;
+  font-family: -apple-system, "Segoe UI", sans-serif;
   background: #0a0a0a;
   color: #e0e0e0;
   display: flex;
@@ -97,8 +97,8 @@ h1 span { color: #ff6b35; }
       <circle cx="70" cy="45" r="3" fill="#fff"/>
     </svg>
   </div>
-  <h1><span>U-Claw</span></h1>
-  <p class="subtitle">AI Assistant / AI 助手</p>
+  <h1><span>SG Claw</span></h1>
+  <p class="subtitle">Portable OpenClaw Assistant</p>
   <div class="loader"><div class="loader-bar"></div></div>
   <p class="status" id="status">Starting OpenClaw engine...</p>
 </div>
@@ -106,11 +106,8 @@ h1 span { color: #ff6b35; }
 <script>
 const messages = [
   'Starting OpenClaw engine...',
-  '正在启动 OpenClaw 引擎...',
   'Checking configuration...',
-  '检查配置文件...',
   'Initializing AI gateway...',
-  '初始化 AI 网关...',
 ];
 let i = 0;
 setInterval(() => {

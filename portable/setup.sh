@@ -1,8 +1,8 @@
 #!/bin/bash
 # ============================================================
-# U-Claw Portable — 开发环境搭建脚本
-# 用法: bash setup.sh
-# 作用: 下载 Node.js 运行时 + 安装 OpenClaw 到 app/ 目录
+# SG Claw Portable setup
+# Usage: bash setup.sh
+# Downloads Node.js runtime and installs OpenClaw under app/
 # ============================================================
 
 set -e
@@ -24,7 +24,7 @@ NC='\033[0m'
 
 echo ""
 echo -e "${CYAN}╔══════════════════════════════════════╗${NC}"
-echo -e "${CYAN}║  🦞 U-Claw Portable Setup           ║${NC}"
+echo -e "${CYAN}║  SG Claw Portable Setup             ║${NC}"
 echo -e "${CYAN}╚══════════════════════════════════════╝${NC}"
 echo ""
 
@@ -131,32 +131,24 @@ PKGJSON
     echo -e "  ${GREEN}✓${NC} OpenClaw 安装完成"
 fi
 
-# ---- 3. Install QQ Plugin ----
-if [ -d "$CORE_DIR/node_modules/@sliverp/qqbot" ]; then
-    echo -e "  ${GREEN}✓${NC} QQ 插件已安装，跳过"
-else
-    echo -e "  ${CYAN}↓${NC} 安装 QQ 插件..."
-    NODE_BIN="$NODE_TARGET/bin/node"
-    NPM_BIN="$NODE_TARGET/bin/npm"
-    "$NODE_BIN" "$NPM_BIN" install @sliverp/qqbot@latest --prefix "$CORE_DIR" --registry="$MIRROR" 2>/dev/null || true
-    echo -e "  ${GREEN}✓${NC} QQ 插件安装完成"
-fi
+# ---- 3. SG Claw does not preinstall China-only chat plugins ----
+echo -e "  ${GREEN}✓${NC} SG chat defaults are WhatsApp and Telegram"
 
-# ---- 4. Install China-optimized skills ----
-SKILLS_CN="$SCRIPT_DIR/skills-cn"
+# ---- 4. Install Singapore-optimized skills ----
+SKILLS_SG="$SCRIPT_DIR/skills-sg"
 SKILLS_TARGET="$CORE_DIR/node_modules/openclaw/skills"
 
-if [ -d "$SKILLS_CN" ] && [ -d "$SKILLS_TARGET" ]; then
-    echo -e "  ${CYAN}↓${NC} 安装中国优化技能 (skills-cn)..."
+if [ -d "$SKILLS_SG" ] && [ -d "$SKILLS_TARGET" ]; then
+    echo -e "  ${CYAN}↓${NC} Installing Singapore skills (skills-sg)..."
     SKILL_COUNT=0
-    for skill_dir in "$SKILLS_CN"/*/; do
+    for skill_dir in "$SKILLS_SG"/*/; do
         skill_name=$(basename "$skill_dir")
         if [ ! -d "$SKILLS_TARGET/$skill_name" ]; then
             cp -R "$skill_dir" "$SKILLS_TARGET/$skill_name"
             SKILL_COUNT=$((SKILL_COUNT + 1))
         fi
     done
-    echo -e "  ${GREEN}✓${NC} 中国技能安装完成 (+$SKILL_COUNT 个)"
+    echo -e "  ${GREEN}✓${NC} Singapore skills installed (+$SKILL_COUNT)"
 fi
 
 # ---- Done ----
@@ -173,5 +165,5 @@ echo -e "    app/core/       ← OpenClaw + 依赖"
 echo -e "    app/runtime/    ← Node.js $NODE_VERSION"
 echo -e "    data/           ← 运行后自动生成"
 echo ""
-echo -e "  ${CYAN}提示: 制作跨平台 U 盘请用 bash setup.sh --all-platforms${NC}"
+echo -e "  ${CYAN}Tip: use bash setup.sh --all-platforms to prepare a cross-platform USB${NC}"
 echo -e "${GREEN}════════════════════════════════════════${NC}"

@@ -143,7 +143,7 @@ function Install-TarNodeRuntime {
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "  U-Claw Portable Setup" -ForegroundColor Cyan
+Write-Host "  SG Claw Portable Setup" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 Write-Host ("  System: {0}" -f [System.Runtime.InteropServices.RuntimeInformation]::OSDescription) -ForegroundColor Green
@@ -194,33 +194,22 @@ else {
     }
 }
 
-if (Test-Path -Path (Join-Path $coreDir "node_modules\@sliverp\qqbot") -PathType Container) {
-    Write-Step "OK" "QQ plugin is already installed, skipping." "Green"
-}
-else {
-    Write-Step "->" "Installing QQ plugin..." "Cyan"
-    try {
-        & $npmCmd install @sliverp/qqbot@latest --prefix $coreDir --registry=$mirror 2>$null
-    }
-    catch {
-    }
-    Write-Step "OK" "QQ plugin installation finished." "Green"
-}
+Write-Step "OK" "SG chat defaults are WhatsApp and Telegram." "Green"
 
-$skillsCn = Join-Path $scriptDir "skills-cn"
+$skillsSg = Join-Path $scriptDir "skills-sg"
 $skillsTarget = Join-Path $coreDir "node_modules\openclaw\skills"
 
-if ((Test-Path -Path $skillsCn -PathType Container) -and (Test-Path -Path $skillsTarget -PathType Container)) {
-    Write-Step "->" "Installing localized skills from skills-cn..." "Cyan"
+if ((Test-Path -Path $skillsSg -PathType Container) -and (Test-Path -Path $skillsTarget -PathType Container)) {
+    Write-Step "->" "Installing Singapore skills from skills-sg..." "Cyan"
     $skillCount = 0
-    Get-ChildItem -Path $skillsCn -Directory | ForEach-Object {
+    Get-ChildItem -Path $skillsSg -Directory | ForEach-Object {
         $targetPath = Join-Path $skillsTarget $_.Name
         if (-not (Test-Path -Path $targetPath -PathType Container)) {
             Copy-Item -Path $_.FullName -Destination $targetPath -Recurse -Force
             $skillCount++
         }
     }
-    Write-Step "OK" ("Localized skills installed (+{0})." -f $skillCount) "Green"
+    Write-Step "OK" ("Singapore skills installed (+{0})." -f $skillCount) "Green"
 }
 
 Write-Host ""

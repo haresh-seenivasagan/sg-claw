@@ -5,7 +5,7 @@ const fs = require('fs');
 const http = require('http');
 
 // ── Constants ──
-const APP_NAME = 'U-Claw';
+const APP_NAME = 'SG Claw';
 const DEFAULT_PORT = 18789;
 const MAX_PORT = 18799;
 const GATEWAY_STARTUP_TIMEOUT = 30000;
@@ -404,14 +404,8 @@ function createMenu() {
       label: 'Help',
       submenu: [
         {
-          label: 'Website',
-          click: () => shell.openExternal('https://u-claw.org')
-        },
-        {
-          label: 'WeChat: hecare888',
-          click: () => {
-            dialog.showMessageBox({ message: 'WeChat / 微信: hecare888', type: 'info' });
-          }
+          label: 'OpenClaw',
+          click: () => shell.openExternal('https://github.com/openclaw/openclaw')
         }
       ]
     }

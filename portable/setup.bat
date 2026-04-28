@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableDelayedExpansion
 chcp 65001 >nul 2>&1
-title U-Claw Portable Setup
+title SG Claw Portable Setup
 
 set "SCRIPT_DIR=%~dp0"
 set "APP_DIR=%SCRIPT_DIR%app"
@@ -15,7 +15,7 @@ if "%~1"=="--all-platforms" set "ALL_PLATFORMS=true"
 
 echo.
 echo   ========================================
-echo     U-Claw Portable Setup
+echo     SG Claw Portable Setup
 echo   ========================================
 echo.
 
@@ -118,37 +118,26 @@ goto openclaw_install_done
 echo   [OK] OpenClaw exists, skipping
 :openclaw_install_done
 
-REM ---- 3. Install QQ Plugin ----
-if exist "%CORE_DIR%\node_modules\@sliverp\qqbot" goto skip_qq_install
+REM ---- 3. SG Claw chat defaults ----
+echo   [OK] SG chat defaults are WhatsApp and Telegram
 
-echo   [INSTALL] Installing QQ Plugin...
-set "NPM_BIN=%NODE_TARGET%\npm.cmd"
-cd /d "%CORE_DIR%"
-call "%NPM_BIN%" install @sliverp/qqbot@latest --prefix "%CORE_DIR%" --registry="%MIRROR%" >nul 2>&1
-echo   [OK] QQ Plugin installed
-goto qq_install_done
-
-:skip_qq_install
-echo   [OK] QQ Plugin exists, skipping
-:qq_install_done
-
-REM ---- 4. Install China-optimized skills ----
-set "SKILLS_CN=%SCRIPT_DIR%skills-cn"
+REM ---- 4. Install Singapore-optimized skills ----
+set "SKILLS_SG=%SCRIPT_DIR%skills-sg"
 set "SKILLS_TARGET=%CORE_DIR%\node_modules\openclaw\skills"
 
-if not exist "%SKILLS_CN%" goto skip_skills_install
+if not exist "%SKILLS_SG%" goto skip_skills_install
 if not exist "%SKILLS_TARGET%" goto skip_skills_install
 
-echo   [COPY] Installing China-optimized skills (skills-cn)...
+echo   [COPY] Installing Singapore skills (skills-sg)...
 set "SKILL_COUNT=0"
-for /d %%s in ("%SKILLS_CN%\*") do (
+for /d %%s in ("%SKILLS_SG%\*") do (
     set "skill_name=%%~nxs"
     if not exist "%SKILLS_TARGET%\!skill_name!" (
         xcopy /s /e /q /y "%%s" "%SKILLS_TARGET%\!skill_name!\" >nul
         set /a SKILL_COUNT+=1
     )
 )
-echo   [OK] China skills installed (+%SKILL_COUNT% skills)
+echo   [OK] Singapore skills installed (+%SKILL_COUNT% skills)
 
 :skip_skills_install
 

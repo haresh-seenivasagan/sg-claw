@@ -3,824 +3,1429 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SG Claw Config Center</title>
+<title>SG-Claw · Set up your AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 :root {
-    --bg-top: #fff7ef;
-    --bg-bottom: #ffe4d6;
-    --ink: #12263f;
-    --muted: #59718a;
-    --soft: #7f93a8;
-    --line: rgba(18, 38, 63, 0.12);
-    --line-strong: rgba(18, 38, 63, 0.22);
-    --card: #fff;
-    --accent: #ed2e38;
-    --accent-dark: #ba1f2b;
-    --gold: #ffc857;
-    --teal: #1b7e96;
-    --green: #268653;
-    --danger: #c73434;
-    --shadow: 0 24px 60px rgba(29, 52, 80, 0.16);
-    --shadow-sm: 0 12px 28px rgba(29, 52, 80, 0.10);
+  --bg-1: #FFF6EE;
+  --bg-2: #FFE8DA;
+  --ink: #11243A;
+  --ink-2: #45607A;
+  --ink-3: #7E94AB;
+  --line: rgba(17,36,58,0.10);
+  --line-2: rgba(17,36,58,0.18);
+  --accent: #ED2E38;
+  --accent-2: #FF6B8B;
+  --gold: #FFC857;
+  --teal: #1B7E96;
+  --green: #2E8B57;
+  --card: #FFFFFF;
+  --shadow-sm: 0 4px 12px rgba(11,36,58,0.06);
+  --shadow-md: 0 12px 28px rgba(11,36,58,0.12);
+  --shadow-lg: 0 24px 48px rgba(11,36,58,0.18);
+  --radius: 16px;
 }
-
-html, body { min-height: 100%; }
+html, body { height: 100%; }
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif;
-    color: var(--ink);
-    background:
-        radial-gradient(900px 480px at 10% -10%, rgba(255, 200, 87, 0.26), transparent 60%),
-        radial-gradient(820px 440px at 110% 8%, rgba(237, 46, 56, 0.14), transparent 58%),
-        linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
-    min-height: 100vh;
-    padding: 28px 18px 56px;
+  font-family: 'Plus Jakarta Sans', -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(255,200,87,0.18), transparent 60%),
+    radial-gradient(1000px 600px at 110% 0%, rgba(237,46,56,0.10), transparent 55%),
+    linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 100%);
+  min-height: 100vh;
+  padding: 28px 20px 60px;
 }
-a { color: var(--accent); text-decoration: none; font-weight: 700; }
+a { color: var(--accent); text-decoration: none; font-weight: 600; }
 a:hover { text-decoration: underline; }
 
-.page { max-width: 860px; margin: 0 auto; }
+/* Top bar */
 .topbar {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 18px;
+  max-width: 760px; margin: 0 auto 22px;
+  display: flex; align-items: center; gap: 10px;
 }
-.logo {
-    width: 44px;
-    height: 44px;
-    border-radius: 14px;
-    background: linear-gradient(145deg, #ff7985, var(--accent) 62%, var(--accent-dark));
-    display: grid;
-    place-items: center;
-    color: #fff;
-    font-size: 25px;
-    box-shadow: 0 10px 22px rgba(237, 46, 56, 0.30), inset 0 1px 0 rgba(255,255,255,0.35);
+.topbar .logo {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: linear-gradient(140deg, #FF7280 0%, var(--accent) 60%, #B0212B 100%);
+  display: grid; place-items: center;
+  box-shadow: 0 6px 14px rgba(237,46,56,0.35), inset 0 -2px 6px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.45);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s cubic-bezier(.2,.7,.2,1);
 }
-.brand { flex: 1; min-width: 0; }
-.brand h1 { font-size: 1.08rem; line-height: 1.2; letter-spacing: 0; }
-.brand p { color: var(--muted); font-size: 0.88rem; margin-top: 2px; }
-.top-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.topbar .logo::after {
+  content: ''; position: absolute; top: -40%; left: -30%; width: 70%; height: 70%;
+  background: radial-gradient(circle, rgba(255,255,255,0.55), transparent 60%);
+  filter: blur(2px);
+  pointer-events: none;
+}
+.topbar .logo:hover { transform: rotate(-6deg) scale(1.05); }
+.topbar .logo .lob {
+  position: relative; z-index: 1;
+  font-size: 26px; line-height: 1;
+  filter: drop-shadow(0 1px 0 rgba(0,0,0,0.18));
+  animation: lobsterWave 3.6s ease-in-out infinite;
+  transform-origin: 50% 80%;
+}
+@keyframes lobsterWave {
+  0%, 100% { transform: rotate(-3deg); }
+  50%      { transform: rotate(6deg); }
+}
+.topbar .title { font-weight: 800; font-size: 1.05rem; letter-spacing: -0.01em; }
+.topbar .sub { color: var(--ink-2); font-size: 0.86rem; }
+.topbar .spacer { flex: 1; }
+.topbar .ghost-btn {
+  font: inherit; border: 1px solid var(--line-2); background: transparent;
+  color: var(--ink-2); padding: 7px 12px; border-radius: 10px; cursor: pointer; font-size: 0.84rem;
+}
+.topbar .ghost-btn:hover { background: rgba(17,36,58,0.04); color: var(--ink); }
 
-.status-bar {
-    background: rgba(255,255,255,0.72);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 11px 14px;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    box-shadow: var(--shadow-sm);
-    backdrop-filter: blur(10px);
+/* Stepper */
+.stepper {
+  max-width: 760px; margin: 0 auto 16px;
+  display: flex; align-items: center; gap: 8px;
 }
-.dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-.dot.on { background: var(--green); animation: pulse 2s infinite; }
-.dot.off { background: var(--danger); }
-@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
-.status-text { flex: 1; font-size: 0.9rem; color: var(--muted); }
+.stepper .seg {
+  flex: 1; height: 6px; border-radius: 999px; background: rgba(17,36,58,0.08);
+  position: relative; overflow: hidden;
+}
+.stepper .seg.done { background: var(--accent); }
+.stepper .seg.cur::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, var(--accent), var(--gold));
+  width: 60%;
+}
 
-.steps {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 16px;
+/* Card */
+.card {
+  max-width: 760px; margin: 0 auto;
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 32px 32px 28px;
+  box-shadow: var(--shadow-lg);
+  animation: cardIn 0.5s cubic-bezier(.2,.7,.2,1) both;
 }
-.step {
-    flex: 1;
-    min-width: 0;
-    border: 1px solid var(--line);
-    color: var(--soft);
-    background: rgba(255,255,255,0.62);
-    border-radius: 12px;
-    padding: 10px 12px;
-    font-size: 0.84rem;
-    font-weight: 750;
-    cursor: pointer;
-    transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.18s;
-}
-.step:hover { transform: translateY(-1px); border-color: var(--line-strong); color: var(--ink); }
-.step.active {
-    color: var(--accent);
-    background: #fff;
-    border-color: rgba(237, 46, 56, 0.34);
-    box-shadow: var(--shadow-sm);
-}
-.step.done { color: var(--green); }
-.step .num {
-    display: inline-grid;
-    place-items: center;
-    width: 22px;
-    height: 22px;
-    border-radius: 999px;
-    background: rgba(18, 38, 63, 0.08);
-    margin-right: 6px;
-    font-size: 0.74rem;
-}
-.step.active .num { background: var(--accent); color: #fff; }
-.step.done .num { background: rgba(38, 134, 83, 0.13); color: var(--green); }
+@keyframes cardIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 540px) { .card { padding: 24px 20px 22px; border-radius: 18px; } }
 
-.section {
-    display: none;
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 22px;
-    padding: 30px;
-    margin-bottom: 16px;
-    box-shadow: var(--shadow);
-}
-.section.active { display: block; animation: cardIn 0.28s ease both; }
-@keyframes cardIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 .eyebrow {
-    color: var(--accent);
-    font-size: 0.72rem;
-    font-weight: 850;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    margin-bottom: 8px;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-weight: 800;
+  color: var(--accent);
+  margin-bottom: 8px;
 }
-.section h2 {
-    font-size: clamp(1.55rem, 3vw, 2.15rem);
-    line-height: 1.1;
-    letter-spacing: 0;
-    margin-bottom: 9px;
+h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 700; letter-spacing: -0.015em;
+  font-size: clamp(1.6rem, 3.2vw, 2.2rem);
+  line-height: 1.12; margin-bottom: 8px;
 }
-.section .desc {
-    color: var(--muted);
-    font-size: 1rem;
-    line-height: 1.55;
-    margin-bottom: 20px;
-    max-width: 680px;
-}
+h1 em { font-style: italic; color: var(--accent); font-weight: 600; }
+.lede { color: var(--ink-2); font-size: 1rem; line-height: 1.55; margin-bottom: 22px; }
 
-.model-grid, .channel-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-    margin-bottom: 18px;
-}
-.model-card {
-    position: relative;
-    text-align: left;
-    background: #fff;
-    border: 2px solid var(--line);
-    border-radius: 16px;
-    padding: 16px;
-    cursor: pointer;
-    transition: border-color 0.16s, transform 0.16s, box-shadow 0.18s, background 0.18s;
-    min-height: 124px;
-}
-.model-card:hover {
-    border-color: var(--line-strong);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-sm);
-}
-.model-card.selected {
-    border-color: var(--accent);
-    background: linear-gradient(180deg, #fff7f5, #fff);
-    box-shadow: 0 14px 30px rgba(237, 46, 56, 0.14);
-}
-.model-card h4 {
-    color: var(--ink);
-    font-size: 1rem;
-    margin-bottom: 6px;
-    display: flex;
-    gap: 7px;
-    align-items: center;
-    flex-wrap: wrap;
-    padding-right: 26px;
-}
-.model-card p { color: var(--muted); font-size: 0.86rem; line-height: 1.42; }
-.model-card .micro { color: var(--soft); font-size: 0.78rem; margin-top: 8px; }
-.model-card.custom { grid-column: 1 / -1; border-style: dashed; min-height: auto; }
-.check {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: var(--accent);
-    color: #fff;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.78rem;
-    font-weight: 800;
-}
-.model-card.selected .check { display: flex; }
-.tag {
-    font-size: 0.66rem;
-    padding: 3px 8px;
-    border-radius: 999px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    background: rgba(18, 38, 63, 0.08);
-    color: var(--muted);
-}
-.tag.hot { background: rgba(237, 46, 56, 0.12); color: var(--accent); }
-.tag.free { background: rgba(38, 134, 83, 0.12); color: var(--green); }
-.tag.fast { background: rgba(27, 126, 150, 0.13); color: var(--teal); }
-.tag.cheap { background: rgba(255, 200, 87, 0.28); color: #8a5b00; }
-.tag.sg { background: rgba(237, 46, 56, 0.12); color: var(--accent); }
-.buy-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    margin-top: 10px;
-    font-size: 0.82rem;
-}
+/* Step content swap */
+.section { display: none; position: relative; }
+.section.active { display: block; animation: cardIn 0.4s ease both; }
+.section.tut-mode { padding-bottom: 230px; }
+@media (max-width: 540px) { .section.tut-mode { padding-bottom: 340px; } }
 
-.form-panel {
-    border: 1px solid var(--line);
-    background: #fffaf7;
-    border-radius: 16px;
-    padding: 16px;
-    margin-bottom: 16px;
-}
-.form-panel h4 { color: var(--ink); font-size: 0.94rem; margin-bottom: 8px; }
-.provider-links { display: flex; flex-wrap: wrap; gap: 8px; }
-.provider-links a {
-    display: inline-flex;
-    align-items: center;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    padding: 7px 10px;
-    background: #fff;
-    font-size: 0.82rem;
-}
-.form-group { margin-bottom: 15px; }
-label { display: block; color: var(--ink); margin-bottom: 7px; font-size: 0.88rem; font-weight: 750; }
-input[type="text"], input[type="password"] {
-    width: 100%;
-    padding: 12px 14px;
-    background: #fff;
-    border: 1.5px solid var(--line-strong);
-    border-radius: 13px;
-    color: var(--ink);
-    font-size: 0.96rem;
-    outline: none;
-    transition: border-color 0.18s, box-shadow 0.18s;
-}
-input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(237, 46, 56, 0.10); }
-.input-wrap { position: relative; }
-.input-wrap input { padding-right: 72px; }
-.toggle-pw {
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: transparent;
-    border: 0;
-    color: var(--muted);
-    cursor: pointer;
-    padding: 6px 8px;
-    font-weight: 750;
-}
-.toggle-pw:hover { color: var(--ink); }
-.hint { color: var(--muted); font-size: 0.82rem; margin-top: 7px; line-height: 1.5; }
-
+/* Buttons */
+.btn-row { display: flex; gap: 10px; margin-top: 18px; align-items: center; flex-wrap: wrap; }
 .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 12px 20px;
-    border: 0;
-    border-radius: 14px;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.18s, background 0.18s;
-    font-weight: 800;
-    text-decoration: none;
-    white-space: nowrap;
+  appearance: none; border: 0; cursor: pointer;
+  padding: 12px 22px;
+  border-radius: 14px;
+  font-family: inherit; font-weight: 700; font-size: 0.96rem;
+  transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
+  display: inline-flex; align-items: center; gap: 8px;
 }
-.btn:hover { text-decoration: none; transform: translateY(-1px); }
-.btn-primary { background: var(--accent); color: #fff; box-shadow: 0 10px 22px rgba(237, 46, 56, 0.25); }
-.btn-primary:hover { background: #d72732; }
-.btn-primary:disabled { background: #d9dce1; color: #7e8994; box-shadow: none; cursor: not-allowed; transform: none; }
-.btn-secondary { background: rgba(18, 38, 63, 0.08); color: var(--ink); }
-.btn-secondary:hover { background: rgba(18, 38, 63, 0.12); }
-.btn-row { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; align-items: center; flex-wrap: wrap; }
+.btn-primary { background: var(--accent); color: white; box-shadow: 0 8px 18px rgba(237,46,56,0.28); }
+.btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 14px 28px rgba(237,46,56,0.34); }
+.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
+.btn-soft  { background: rgba(17,36,58,0.06); color: var(--ink); }
+.btn-soft:hover { background: rgba(17,36,58,0.10); }
+.btn-ghost { background: transparent; color: var(--ink); }
+.btn-ghost:hover { background: rgba(17,36,58,0.05); }
+.spacer { flex: 1; }
 
-.result { text-align: center; padding: 26px 8px 8px; }
-.result .icon { font-size: 3rem; margin-bottom: 12px; }
-.result h2 { color: var(--green); }
-.result p { color: var(--muted); font-size: 0.95rem; line-height: 1.55; }
-.result .url { color: var(--accent); font-size: 1.08rem; font-weight: 850; margin: 12px 0; }
-.channel-zone { margin-top: 26px; text-align: left; }
-.channel-zone h3 { color: var(--ink); font-size: 1rem; margin-bottom: 7px; }
+/* Pick cards */
+.grid { display: grid; gap: 12px; }
+.grid.g2 { grid-template-columns: 1fr 1fr; }
+.grid.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.grid.g1 { grid-template-columns: 1fr; }
+@media (max-width: 600px) { .grid.g2, .grid.g3 { grid-template-columns: 1fr; } }
+
+.pick {
+  position: relative;
+  text-align: left;
+  background: white;
+  border: 2px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.15s, box-shadow 0.2s, background 0.2s;
+  display: flex; gap: 12px; align-items: flex-start;
+  font-family: inherit;
+  width: 100%;
+}
+.pick:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--line-2); }
+.pick.selected {
+  border-color: var(--accent);
+  background: linear-gradient(180deg, #FFF6F4 0%, #FFFFFF 100%);
+  box-shadow: 0 10px 22px rgba(237,46,56,0.16);
+}
+.pick .ico { font-size: 1.65rem; line-height: 1; flex: 0 0 auto; }
+.pick .body h4 { font-size: 0.98rem; margin-bottom: 2px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.pick .body p { color: var(--ink-2); font-size: 0.84rem; line-height: 1.45; }
+.pick .body .micro { color: var(--ink-3); font-size: 0.78rem; margin-top: 6px; }
+.pick .check {
+  position: absolute; top: 10px; right: 12px;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--accent); color: white;
+  display: none; align-items: center; justify-content: center;
+  font-size: 0.78rem; font-weight: 700;
+}
+.pick.selected .check { display: flex; }
+.tag { font-size: 0.66rem; padding: 2px 8px; border-radius: 999px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+.tag.rec { background: rgba(237,46,56,0.12); color: var(--accent); }
+.tag.fast { background: rgba(124,58,237,0.12); color: #6d28d9; }
+.tag.value { background: rgba(46,139,87,0.12); color: var(--green); }
+.tag.smart { background: rgba(31,111,235,0.12); color: #1f6feb; }
+
+/* Form */
+.field { margin-bottom: 14px; }
+.field label { display: block; font-size: 0.86rem; font-weight: 700; margin-bottom: 6px; color: var(--ink); }
+.field .input-wrap { position: relative; }
+.field input {
+  width: 100%; padding: 12px 14px;
+  border: 1.5px solid var(--line-2);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 0.96rem;
+  background: white;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.field input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(237,46,56,0.10); }
+.field .toggle-pw {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  background: none; border: 0; color: var(--ink-3); cursor: pointer; font-size: 0.92rem; padding: 4px 8px;
+}
+.field .toggle-pw:hover { color: var(--ink); }
+.hint { color: var(--ink-2); font-size: 0.82rem; line-height: 1.55; margin-top: 6px; }
+
+/* Welcome (Step 0) */
+.welcome {
+  display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 28px; align-items: center;
+  margin-bottom: 4px;
+}
+@media (max-width: 720px) { .welcome { grid-template-columns: 1fr; } }
+.welcome-text { min-width: 0; }
+.welcome-text .lede { margin-bottom: 0; }
+.welcome-art {
+  background:
+    radial-gradient(120% 80% at 50% 110%, #0E3A52 0%, #1B7E96 30%, #FF8C69 65%, #FFD8B5 100%);
+  border-radius: 18px;
+  height: 280px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  box-shadow: inset 0 -10px 30px rgba(11,36,58,0.18);
+}
+/* twinkling stars (faint at top) */
+.welcome-art .star { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: white; opacity: 0; animation: twinkle 4s ease-in-out infinite; }
+.welcome-art .star.s1 { top: 10%; left: 18%; animation-delay: 0.2s; }
+.welcome-art .star.s2 { top: 14%; left: 72%; animation-delay: 1.4s; }
+.welcome-art .star.s3 { top: 22%; left: 40%; animation-delay: 2.6s; }
+@keyframes twinkle { 0%, 100% { opacity: 0; } 50% { opacity: 0.85; } }
+/* sun */
+.welcome-art .sun {
+  position: absolute; top: 32%; left: 50%; transform: translate(-50%, -50%);
+  width: 96px; height: 96px; border-radius: 50%;
+  background: radial-gradient(circle at 50% 45%, #FFF5C2 0%, #FFE38A 45%, rgba(255,196,108,0) 78%);
+  animation: glow 3.5s ease-in-out infinite alternate;
+  filter: blur(0.3px);
+}
+@keyframes glow { from { transform: translate(-50%, -50%) scale(1); opacity: 0.92; } to { transform: translate(-50%, -50%) scale(1.07); opacity: 1; } }
+/* drifting cloud */
+.welcome-art .cloud {
+  position: absolute; top: 18%; left: -30%;
+  width: 120px; height: 22px; border-radius: 999px;
+  background: rgba(255,255,255,0.7);
+  filter: blur(1px);
+  animation: cloudDrift 22s linear infinite;
+}
+@keyframes cloudDrift { from { left: -30%; } to { left: 130%; } }
+/* skyline */
+.welcome-art svg.skyline { position: absolute; left: 50%; bottom: 56px; transform: translateX(-50%); width: 88%; pointer-events: none; }
+/* smooth water waves */
+.welcome-art .water { position: absolute; left: 0; right: 0; bottom: 0; height: 78px; pointer-events: none; }
+.welcome-art .water svg { position: absolute; bottom: 0; left: 0; width: 220%; height: 100%; }
+.welcome-art .water .wA { animation: waveSlide 12s linear infinite;          opacity: 0.55; }
+.welcome-art .water .wB { animation: waveSlide  8s linear infinite reverse;  opacity: 0.78; bottom: -6px; }
+.welcome-art .water .wC { animation: waveSlide  5s linear infinite;          opacity: 1;    bottom: -14px; }
+@keyframes waveSlide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+/* lobster character */
+.welcome-art .lobster {
+  position: absolute; right: 8%; bottom: 18px; width: 96px; height: 96px;
+  filter: drop-shadow(0 6px 10px rgba(11,36,58,0.35));
+  animation: lobsterBob 3.2s ease-in-out infinite;
+  transform-origin: 50% 80%;
+}
+@keyframes lobsterBob {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50%      { transform: translateY(-8px) rotate(3deg); }
+}
+.welcome-art .lobster .arm-l { transform-origin: 22% 38%; animation: armWave 1.6s ease-in-out infinite; }
+.welcome-art .lobster .arm-r { transform-origin: 78% 38%; animation: armWave 1.6s ease-in-out 0.4s infinite reverse; }
+@keyframes armWave {
+  0%, 100% { transform: rotate(-6deg); }
+  50%      { transform: rotate(10deg); }
+}
+.welcome-art .speech {
+  position: absolute; right: 110px; bottom: 84px;
+  background: white; color: var(--ink); font-weight: 700; font-size: 0.78rem;
+  padding: 6px 11px; border-radius: 14px; border: 1.5px solid var(--ink);
+  box-shadow: 0 4px 0 var(--ink);
+  animation: speechPop 4s ease-in-out infinite;
+}
+.welcome-art .speech::after {
+  content: ''; position: absolute; right: -8px; bottom: 6px;
+  width: 0; height: 0; border: 6px solid transparent; border-left-color: white;
+  filter: drop-shadow(2px 0 0 var(--ink));
+}
+@keyframes speechPop {
+  0%, 12%, 100% { transform: translateY(0) scale(1); opacity: 1; }
+  20%, 80% { transform: translateY(-3px) scale(1.04); opacity: 1; }
+  90% { opacity: 0; transform: translateY(-6px); }
+  95% { opacity: 0; }
+}
+@media (max-width: 720px) {
+  .welcome-art { height: 220px; }
+  .welcome-art .lobster { width: 78px; height: 78px; right: 6%; }
+  .welcome-art .speech { right: 90px; bottom: 70px; }
+}
+
+/* Pre-configured value strip */
+.preset-strip {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;
+  margin: 18px 0 4px;
+  align-items: stretch;
+}
+@media (max-width: 600px) { .preset-strip { grid-template-columns: 1fr; } }
+.preset-strip .ps {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 14px;
+  border-radius: 14px;
+  background: white;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s, box-shadow 0.2s;
+  min-height: 76px;
+}
+.preset-strip .ps:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.preset-strip .ps .ico {
+  flex: 0 0 auto;
+  width: 36px; height: 36px; border-radius: 10px;
+  display: grid; place-items: center;
+  color: white;
+  box-shadow: 0 4px 10px rgba(11,36,58,0.16), inset 0 1px 0 rgba(255,255,255,0.30);
+}
+.preset-strip .ps .ico svg { width: 20px; height: 20px; }
+.preset-strip .ps.ps-zap   .ico { background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%); }
+.preset-strip .ps.ps-lock  .ico { background: linear-gradient(135deg, #4DD0E1 0%, #1B7E96 100%); }
+.preset-strip .ps.ps-merl  .ico { background: linear-gradient(135deg, #FF7280 0%, #ED2E38 100%); }
+.preset-strip .ps .ps-body { line-height: 1.32; min-width: 0; flex: 1; }
+.preset-strip .ps .ps-body .t { font-size: 0.9rem; font-weight: 700; color: var(--ink); margin-bottom: 2px; }
+.preset-strip .ps .ps-body .d { font-size: 0.78rem; color: var(--ink-2); }
+
+/* Lobster Tutorial — floating mascot + speech bubble, transparent base */
+.tut {
+  display: none;
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  width: min(560px, calc(100% - 24px));
+  z-index: 20;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 12px;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  pointer-events: none;
+}
+.section.tut-mode .tut {
+  display: flex;
+  animation: tutSlideIn 0.55s cubic-bezier(.2,.8,.2,1) both;
+}
+.tut > * { pointer-events: auto; }
+@keyframes tutSlideIn {
+  from { opacity: 0; transform: translate(-50%, 28px) scale(0.96); }
+  to   { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+@media (max-width: 540px) {
+  .tut { flex-direction: column; align-items: center; }
+  .tut-bubble::before, .tut-bubble::after { display: none; }
+}
+
+.tut-lob {
+  flex: 0 0 auto;
+  width: 88px; height: 88px;
+  display: grid; place-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  position: relative;
+  animation: lobPop 0.7s 0.1s cubic-bezier(.2,1.5,.4,1) backwards, tutBob 3.6s 0.8s ease-in-out infinite;
+  transform-origin: 50% 80%;
+}
+.tut-lob .lob-svg {
+  width: 88px; height: 88px;
+  filter:
+    drop-shadow(0 6px 4px rgba(11,36,58,0.20))
+    drop-shadow(0 14px 18px rgba(11,36,58,0.25));
+}
+@keyframes lobPop {
+  from { transform: scale(0.4) rotate(-22deg); opacity: 0; }
+  60%  { transform: scale(1.08) rotate(8deg); opacity: 1; }
+  to   { transform: scale(1) rotate(0); opacity: 1; }
+}
+@keyframes tutBob {
+  0%, 100% { transform: rotate(-3deg) translateY(0); }
+  50%      { transform: rotate(5deg) translateY(-3px); }
+}
+
+/* Speech bubble carries the whole message */
+.tut-bubble {
+  flex: 1;
+  min-width: 0;
+  background: white;
+  border: 1.5px solid var(--ink);
+  border-radius: 14px;
+  padding: 14px 16px 12px;
+  box-shadow: 0 4px 0 rgba(17,36,58,0.16), 0 18px 36px rgba(11,36,58,0.18);
+  position: relative;
+  color: var(--ink);
+}
+.tut-bubble::before {
+  content: ''; position: absolute; left: -10px; top: 22px;
+  width: 0; height: 0;
+  border: 8px solid transparent;
+  border-right-color: var(--ink);
+  border-left: 0;
+}
+.tut-bubble::after {
+  content: ''; position: absolute; left: -7px; top: 23px;
+  width: 0; height: 0;
+  border: 7px solid transparent;
+  border-right-color: white;
+  border-left: 0;
+}
+.tut-bubble h4 {
+  font-size: 0.98rem;
+  font-weight: 800;
+  line-height: 1.35;
+  margin-bottom: 10px;
+  color: var(--ink);
+  font-family: 'Plus Jakarta Sans', inherit;
+}
+.tut-bubble ul, .tut-bubble ol {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px;
+}
+.tut-bubble ul li, .tut-bubble ol li {
+  position: relative;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--ink);
+  margin: 4px 0;
+}
+.tut-bubble ul li {
+  padding-left: 18px;
+}
+.tut-bubble ul li::before {
+  content: '';
+  position: absolute;
+  left: 4px; top: 9px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.tut-bubble ol {
+  counter-reset: tut-step;
+}
+.tut-bubble ol li {
+  padding-left: 28px;
+  margin: 5px 0;
+}
+.tut-bubble ol li::before {
+  counter-increment: tut-step;
+  content: counter(tut-step);
+  position: absolute;
+  left: 0; top: 1px;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 800;
+  display: grid; place-items: center;
+  line-height: 1;
+}
+.tut-bubble code {
+  background: rgba(17,36,58,0.06);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-family: 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 0.85em;
+  color: var(--accent);
+  white-space: nowrap;
+}
+.tut-bubble b { font-weight: 700; }
+
+.tut-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 4px;
+}
+.tut-actions button {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.86rem;
+  transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
+}
+.tut-skip {
+  background: transparent;
+  color: var(--ink-2);
+}
+.tut-skip:hover { background: rgba(17,36,58,0.06); color: var(--ink); }
+.tut-next {
+  background: var(--accent);
+  color: white;
+  box-shadow: 0 4px 10px rgba(237,46,56,0.30);
+}
+.tut-next:hover { transform: translateY(-1px); box-shadow: 0 8px 16px rgba(237,46,56,0.36); }
+
+/* Help button to re-open tutorial after dismissing */
+.tut-reopen {
+  position: absolute; top: 10px; right: 10px;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line-2);
+  background: white;
+  color: var(--accent);
+  font-weight: 800; font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  z-index: 5;
+  display: none;
+  align-items: center; justify-content: center;
+}
+.tut-reopen:hover { background: rgba(237,46,56,0.08); transform: scale(1.06); }
+.section[data-tut-dismissed="1"] .tut-reopen { display: flex; }
+
+.community-tags { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0 6px; }
+.community-tags .ct {
+  font-size: 0.78rem; font-weight: 600; padding: 6px 10px; border-radius: 999px;
+  background: rgba(17,36,58,0.06); color: var(--ink);
+  display: inline-flex; gap: 6px; align-items: center;
+}
+
+/* Channel cards */
+.ch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 8px; }
+@media (max-width: 600px) { .ch-grid { grid-template-columns: 1fr; } }
 .channel-form {
-    padding-top: 0;
-    margin-top: 12px;
-    border-top: 1px solid var(--line);
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.28s ease, padding 0.28s ease;
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.3s ease, margin 0.2s ease;
+  margin-top: 0;
 }
-.channel-form.open { max-height: 220px; padding-top: 12px; }
-.toast {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: var(--green);
-    color: #fff;
-    padding: 12px 18px;
-    border-radius: 12px;
-    font-size: 0.9rem;
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: all 0.25s;
-    z-index: 999;
-    box-shadow: var(--shadow-sm);
-}
+.channel-form.open { max-height: 320px; margin-top: 12px; }
+.channel-form .field { margin-bottom: 10px; }
+.channel-form .field label { font-size: 0.8rem; }
+.channel-form input { font-size: 0.9rem; padding: 10px 12px; }
+
+/* Skill cards (multi-select) */
+.row-tip { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.row-tip .small { color: var(--ink-2); font-size: 0.84rem; }
+.linklike { background: none; border: 0; color: var(--accent); font-weight: 700; cursor: pointer; font-family: inherit; font-size: 0.84rem; }
+.linklike:hover { text-decoration: underline; }
+
+/* Done */
+.done-wrap { text-align: center; padding: 12px 0 6px; }
+.done-emoji { font-size: 3rem; animation: pop 0.6s 0.1s cubic-bezier(.2,1.4,.4,1) backwards; }
+@keyframes pop { from { transform: scale(0.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* Toast */
+.toast { position: fixed; top: 16px; right: 16px; background: var(--ink); color: white; padding: 11px 16px; border-radius: 10px; font-size: 0.88rem; opacity: 0; transform: translateY(-8px); transition: all 0.25s; z-index: 999; box-shadow: var(--shadow-md); }
 .toast.show { opacity: 1; transform: translateY(0); }
-.toast.error { background: var(--danger); }
+.toast.error { background: #B22222; }
 
-.info-strip {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-}
-.info-item {
-    background: rgba(255,255,255,0.70);
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    padding: 13px 14px;
-}
-.info-item h4 { font-size: 0.9rem; margin-bottom: 4px; }
-.info-item p { color: var(--muted); font-size: 0.78rem; line-height: 1.4; }
+/* Confetti */
+.confetti { position: fixed; inset: 0; pointer-events: none; z-index: 5; }
+.confetti i { position: absolute; top: -10px; width: 8px; height: 14px; border-radius: 2px; animation: fall linear forwards; }
+@keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: 0.8; } }
 
-@media (max-width: 680px) {
-    body { padding: 18px 12px 40px; }
-    .topbar { align-items: flex-start; }
-    .top-actions { width: 100%; justify-content: flex-start; }
-    .steps { gap: 6px; }
-    .step { padding: 9px 8px; font-size: 0.78rem; }
-    .step .num { display: none; }
-    .section { padding: 22px 18px; border-radius: 18px; }
-    .model-grid, .channel-grid, .info-strip { grid-template-columns: 1fr; }
-    .model-card.custom { grid-column: auto; }
-    .btn-row { justify-content: stretch; }
-    .btn-row .btn { flex: 1; }
-    .toast { left: 14px; right: 14px; }
-}
+/* Footer */
+.foot { max-width: 760px; margin: 18px auto 0; color: var(--ink-3); font-size: 0.78rem; text-align: center; }
 </style>
 </head>
 <body>
-<div class="page">
-    <div class="topbar">
-        <div class="logo">S</div>
-        <div class="brand">
-            <h1>SG Claw Config Center</h1>
-            <p>Set the model key, optional chat channels, and launch the local dashboard.</p>
-        </div>
-        <div class="top-actions">
-            <a class="btn btn-secondary" href="https://github.com/openclaw/openclaw" target="_blank" rel="noopener">OpenClaw</a>
-        </div>
-    </div>
 
-    <div class="status-bar">
-        <div class="dot" id="statusDot"></div>
-        <div class="status-text" id="statusText">Checking local gateway...</div>
-    </div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="sg-lobster" viewBox="0 0 100 100">
+      <!-- antennae -->
+      <path d="M40 30 Q 32 12 22 8" stroke="#B0212B" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M60 30 Q 68 12 78 8" stroke="#B0212B" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <circle cx="22" cy="8" r="2.2" fill="#B0212B"/>
+      <circle cx="78" cy="8" r="2.2" fill="#B0212B"/>
+      <!-- arms -->
+      <path d="M30 56 Q 20 54 12 60 L 18 56 Q 26 54 32 50 Z" fill="#ED2E38" stroke="#7A1820" stroke-width="1.5"/>
+      <path d="M70 56 Q 80 54 88 60 L 82 56 Q 74 54 68 50 Z" fill="#ED2E38" stroke="#7A1820" stroke-width="1.5"/>
+      <!-- claws -->
+      <ellipse cx="14" cy="62" rx="11" ry="9" fill="#ED2E38" stroke="#7A1820" stroke-width="1.6"/>
+      <path d="M3 60 L 13 62 L 3 64 Z" fill="#FFE4D6" stroke="#7A1820" stroke-width="1.2"/>
+      <ellipse cx="86" cy="62" rx="11" ry="9" fill="#ED2E38" stroke="#7A1820" stroke-width="1.6"/>
+      <path d="M97 60 L 87 62 L 97 64 Z" fill="#FFE4D6" stroke="#7A1820" stroke-width="1.2"/>
+      <!-- body -->
+      <path d="M32 38 Q 50 28 68 38 Q 72 60 68 78 Q 50 84 32 78 Q 28 60 32 38 Z" fill="#ED2E38" stroke="#7A1820" stroke-width="1.8"/>
+      <!-- belly -->
+      <path d="M38 44 Q 50 38 62 44 Q 64 60 62 74 Q 50 78 38 74 Q 36 60 38 44 Z" fill="#FF7280" opacity="0.65"/>
+      <!-- segment lines -->
+      <path d="M34 52 Q 50 56 66 52" stroke="#7A1820" stroke-width="1" fill="none" stroke-linecap="round"/>
+      <path d="M34 62 Q 50 66 66 62" stroke="#7A1820" stroke-width="1" fill="none" stroke-linecap="round"/>
+      <path d="M34 72 Q 50 76 66 72" stroke="#7A1820" stroke-width="1" fill="none" stroke-linecap="round"/>
+      <!-- tail fan -->
+      <path d="M34 78 Q 50 96 66 78 Q 60 88 50 88 Q 40 88 34 78 Z" fill="#ED2E38" stroke="#7A1820" stroke-width="1.6"/>
+      <!-- eyes -->
+      <circle cx="42" cy="42" r="3.4" fill="white" stroke="#7A1820" stroke-width="1.2"/>
+      <circle cx="58" cy="42" r="3.4" fill="white" stroke="#7A1820" stroke-width="1.2"/>
+      <circle cx="43" cy="43" r="1.5" fill="#11243A"/>
+      <circle cx="59" cy="43" r="1.5" fill="#11243A"/>
+      <!-- smile -->
+      <path d="M44 50 Q 50 53 56 50" stroke="#7A1820" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+      <!-- cheek blush -->
+      <ellipse cx="38" cy="48" rx="2.2" ry="1.4" fill="#FF8FA0" opacity="0.8"/>
+      <ellipse cx="62" cy="48" rx="2.2" ry="1.4" fill="#FF8FA0" opacity="0.8"/>
+    </symbol>
+  </defs>
+</svg>
 
-    <div class="steps">
-        <div class="step active" data-step="1" onclick="goStep(1)"><span class="num">1</span>Model</div>
-        <div class="step" data-step="2" onclick="goStep(2)"><span class="num">2</span>Key</div>
-        <div class="step" data-step="3" onclick="goStep(3)"><span class="num">3</span>Launch</div>
-    </div>
-
-    <div class="section active" id="step1">
-        <div class="eyebrow">Step 1 of 3</div>
-        <h2>Pick your AI brain.</h2>
-        <p class="desc">Choose a provider you already use, or start with a low-cost option. The saved config keeps the OpenClaw provider shape unchanged.</p>
-
-        <div class="model-grid">
-            <div class="model-card" data-provider="deepseek" data-base="https://api.deepseek.com/v1" data-model="deepseek-chat">
-                <span class="check">✓</span>
-                <h4>DeepSeek <span class="tag cheap">Value</span></h4>
-                <p>Low-cost general model with strong coding support.</p>
-                <div class="micro">Model: deepseek-chat</div>
-                <a class="buy-link" href="https://platform.deepseek.com/" target="_blank" rel="noopener">Get API key</a>
-            </div>
-            <div class="model-card" data-provider="openai" data-base="https://api.openai.com/v1" data-model="gpt-4o">
-                <span class="check">✓</span>
-                <h4>OpenAI <span class="tag hot">Popular</span></h4>
-                <p>Reliable all-rounder for household admin and daily tasks.</p>
-                <div class="micro">Model: gpt-4o</div>
-                <a class="buy-link" href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">Get API key</a>
-            </div>
-            <div class="model-card" data-provider="anthropic" data-base="https://api.anthropic.com/v1" data-model="claude-sonnet-4-20250514">
-                <span class="check">✓</span>
-                <h4>Claude <span class="tag sg">Writing</span></h4>
-                <p>Strong for summarising, drafting, and careful reasoning.</p>
-                <div class="micro">Model: claude-sonnet-4-20250514</div>
-                <a class="buy-link" href="https://console.anthropic.com/" target="_blank" rel="noopener">Get API key</a>
-            </div>
-            <div class="model-card" data-provider="gemini" data-base="https://generativelanguage.googleapis.com/v1beta/openai" data-model="gemini-2.5-flash">
-                <span class="check">✓</span>
-                <h4>Gemini <span class="tag free">Free tier</span></h4>
-                <p>Fast option with a generous starter quota.</p>
-                <div class="micro">Model: gemini-2.5-flash</div>
-                <a class="buy-link" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Get API key</a>
-            </div>
-            <div class="model-card custom" data-provider="custom" data-base="" data-model="">
-                <span class="check">✓</span>
-                <h4>Custom OpenAI-compatible API <span class="tag">Advanced</span></h4>
-                <p>Use OpenRouter, a private gateway, or another OpenAI-compatible endpoint.</p>
-            </div>
-        </div>
-
-        <div class="btn-row">
-            <button class="btn btn-primary" id="nextStep1" disabled>Plug in a key</button>
-        </div>
-    </div>
-
-    <div class="section" id="step2">
-        <div class="eyebrow">Step 2 of 3</div>
-        <h2>Paste the API key.</h2>
-        <p class="desc" id="step2desc">The key is saved only to the local OpenClaw config file on this drive.</p>
-
-        <div class="form-panel" id="buyInfo">
-            <h4>Provider links</h4>
-            <div class="provider-links" id="providerLinks"></div>
-        </div>
-
-        <div id="customFields" style="display:none;">
-            <div class="form-group">
-                <label for="customBase">API base URL</label>
-                <input type="text" id="customBase" placeholder="https://api.example.com/v1">
-            </div>
-            <div class="form-group">
-                <label for="customModel">Model name</label>
-                <input type="text" id="customModel" placeholder="gpt-4o">
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label for="apiKey">API key</label>
-            <div class="input-wrap">
-                <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off">
-                <button class="toggle-pw" type="button" onclick="togglePw('apiKey')">Show</button>
-            </div>
-            <p class="hint">The config server writes this into <code>portable/data/.openclaw/openclaw.json</code>. It does not call provider APIs.</p>
-        </div>
-
-        <div class="btn-row">
-            <button class="btn btn-secondary" onclick="goStep(1)">Back</button>
-            <button class="btn btn-primary" onclick="saveConfig()">Save and continue</button>
-        </div>
-    </div>
-
-    <div class="section" id="step3">
-        <div class="result">
-            <div class="icon">✓</div>
-            <h2>Config saved.</h2>
-            <p>The dashboard runs locally on the OpenClaw gateway port.</p>
-            <div class="url" id="gatewayUrl">http://127.0.0.1:18789</div>
-
-            <div class="channel-zone">
-                <h3>Chat channels</h3>
-                <p class="hint" style="margin-bottom:12px;">Optional. Save a Telegram token now, or mark WhatsApp for QR pairing in the dashboard.</p>
-                <div class="channel-grid">
-                    <div class="model-card channel-card" onclick="toggleChannel(this, 'whatsapp')">
-                        <h4>WhatsApp <span class="tag sg">SG default</span></h4>
-                        <p>Pair by QR after launch, similar to WhatsApp Web.</p>
-                        <div class="channel-form" id="form-whatsapp" onclick="event.stopPropagation()">
-                            <div class="form-group">
-                                <label for="ch-whatsapp-phone">Phone label</label>
-                                <input type="text" id="ch-whatsapp-phone" placeholder="+65 9123 4567">
-                                <p class="hint">Optional label only. QR pairing still happens in the dashboard.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="model-card channel-card" onclick="toggleChannel(this, 'telegram')">
-                        <h4>Telegram</h4>
-                        <p>Use a bot token from BotFather.</p>
-                        <div class="channel-form" id="form-telegram" onclick="event.stopPropagation()">
-                            <div class="form-group">
-                                <label for="ch-telegram-token">Bot token</label>
-                                <input type="text" id="ch-telegram-token" placeholder="123456:ABC-DEF...">
-                                <p class="hint"><a href="https://t.me/BotFather" target="_blank" rel="noopener">Open @BotFather</a></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div style="margin-top: 24px;">
-                <button class="btn btn-primary" onclick="saveChannelsAndOpen()">Open dashboard</button>
-            </div>
-
-            <div class="btn-row" style="justify-content: center; margin-top: 16px;">
-                <button class="btn btn-secondary" onclick="goStep(1)">Change model</button>
-                <button class="btn btn-secondary" onclick="viewConfig()">View config JSON</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="info-strip">
-        <div class="info-item">
-            <h4>Config</h4>
-            <p>Model keys and channels stay in local OpenClaw JSON.</p>
-        </div>
-        <div class="info-item">
-            <h4>Runtime</h4>
-            <p>The bundled Node.js and OpenClaw files live under app/.</p>
-        </div>
-        <div class="info-item">
-            <h4>Data</h4>
-            <p>Local state and history stay under data/ on this drive.</p>
-        </div>
-    </div>
+<div class="topbar">
+  <div class="logo" aria-label="SG-Claw lobster">
+    <span class="lob" role="img" aria-hidden="true">🦞</span>
+  </div>
+  <div>
+    <div class="title">SG-Claw</div>
+    <div class="sub">Your local AI sidekick · part of the OpenClaw community</div>
+  </div>
+  <div class="spacer"></div>
+  <button class="ghost-btn" id="restartBtn">Reset setup</button>
 </div>
 
+<div class="stepper" id="stepper" aria-hidden="true"></div>
+
+<main class="card" id="card">
+
+  <!-- Step 0: Welcome / Community -->
+  <section class="section active" data-step="0">
+    <div class="welcome">
+      <div class="welcome-text">
+        <div class="eyebrow">Welcome to SG-Claw</div>
+        <h1>Your office AI, <em>already packed</em>.</h1>
+        <p class="lede">Skills, prompts, memory and channel hooks come pre-configured. Sign up for one API key and you're using it — no YAML, no plugin hunting.</p>
+      </div>
+
+      <div class="welcome-art" aria-hidden="true">
+        <span class="star s1"></span>
+        <span class="star s2"></span>
+        <span class="star s3"></span>
+        <div class="cloud"></div>
+        <div class="sun"></div>
+
+        <!-- Singapore skyline silhouette -->
+        <svg class="skyline" viewBox="0 0 360 110">
+          <defs>
+            <linearGradient id="bldg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#1B3D58" stop-opacity="0.92"/>
+              <stop offset="1" stop-color="#0E2638" stop-opacity="1"/>
+            </linearGradient>
+          </defs>
+          <!-- Marina Bay Sands towers -->
+          <g fill="url(#bldg)">
+            <path d="M70,100 L80,30 L92,100 Z"/>
+            <path d="M104,100 L114,30 L126,100 Z"/>
+            <path d="M138,100 L148,30 L160,100 Z"/>
+          </g>
+          <!-- Sky park slab -->
+          <path d="M62,32 Q114,18 168,32 L168,40 Q114,26 62,40 Z" fill="#1B3D58" stroke="#0E2638" stroke-width="0.8"/>
+          <!-- ArtScience Museum (lotus) -->
+          <path d="M188,100 C190,82 200,68 208,62 C210,58 215,58 215,62 C223,68 233,82 235,100 Z" fill="url(#bldg)"/>
+          <!-- Merlion silhouette -->
+          <path d="M250,100 Q254,62 274,62 Q288,64 284,80 L289,80 L284,85 L289,90 L282,90 L280,100 Z" fill="url(#bldg)"/>
+          <!-- Far skyline -->
+          <g fill="#0E2638" opacity="0.7">
+            <rect x="6"   y="74" width="14" height="26"/>
+            <rect x="22"  y="64" width="12" height="36"/>
+            <rect x="36"  y="78" width="14" height="22"/>
+            <rect x="300" y="70" width="14" height="30"/>
+            <rect x="316" y="80" width="12" height="20"/>
+            <rect x="330" y="64" width="14" height="36"/>
+            <rect x="346" y="76" width="10" height="24"/>
+          </g>
+          <!-- Land base -->
+          <path d="M0,100 C60,94 120,100 180,98 C240,96 300,100 360,98 L360,110 L0,110 Z" fill="#062235"/>
+        </svg>
+
+        <!-- Cute lobster mascot -->
+        <svg class="lobster" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <!-- antennae -->
+          <path d="M40 30 Q 32 12 22 8" stroke="#B0212B" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+          <path d="M60 30 Q 68 12 78 8" stroke="#B0212B" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+          <circle cx="22" cy="8" r="2.2" fill="#B0212B"/>
+          <circle cx="78" cy="8" r="2.2" fill="#B0212B"/>
+          <!-- arms -->
+          <path class="arm-l" d="M30 56 Q 20 54 12 60 L 18 56 Q 26 54 32 50 Z" fill="#ED2E38" stroke="#7A1820" stroke-width="1.5"/>
+          <path class="arm-r" d="M70 56 Q 80 54 88 60 L 82 56 Q 74 54 68 50 Z" fill="#ED2E38" stroke="#7A1820" stroke-width="1.5"/>
+          <!-- claws -->
+          <g class="arm-l">
+            <ellipse cx="14" cy="62" rx="11" ry="9" fill="#ED2E38" stroke="#7A1820" stroke-width="1.6"/>
+            <path d="M3 60 L 13 62 L 3 64 Z" fill="#FFE4D6" stroke="#7A1820" stroke-width="1.2"/>
+          </g>
+          <g class="arm-r">
+            <ellipse cx="86" cy="62" rx="11" ry="9" fill="#ED2E38" stroke="#7A1820" stroke-width="1.6"/>
+            <path d="M97 60 L 87 62 L 97 64 Z" fill="#FFE4D6" stroke="#7A1820" stroke-width="1.2"/>
+          </g>
+          <!-- body -->
+          <path d="M32 38 Q 50 28 68 38 Q 72 60 68 78 Q 50 84 32 78 Q 28 60 32 38 Z" fill="#ED2E38" stroke="#7A1820" stroke-width="1.8"/>
+          <!-- belly -->
+          <path d="M38 44 Q 50 38 62 44 Q 64 60 62 74 Q 50 78 38 74 Q 36 60 38 44 Z" fill="#FF7280" opacity="0.65"/>
+          <!-- segment lines -->
+          <path d="M34 52 Q 50 56 66 52" stroke="#7A1820" stroke-width="1" fill="none" stroke-linecap="round"/>
+          <path d="M34 62 Q 50 66 66 62" stroke="#7A1820" stroke-width="1" fill="none" stroke-linecap="round"/>
+          <path d="M34 72 Q 50 76 66 72" stroke="#7A1820" stroke-width="1" fill="none" stroke-linecap="round"/>
+          <!-- tail fan -->
+          <path d="M34 78 Q 50 96 66 78 Q 60 88 50 88 Q 40 88 34 78 Z" fill="#ED2E38" stroke="#7A1820" stroke-width="1.6"/>
+          <!-- eyes -->
+          <circle cx="42" cy="42" r="3.4" fill="white" stroke="#7A1820" stroke-width="1.2"/>
+          <circle cx="58" cy="42" r="3.4" fill="white" stroke="#7A1820" stroke-width="1.2"/>
+          <circle cx="43" cy="43" r="1.5" fill="#11243A"/>
+          <circle cx="59" cy="43" r="1.5" fill="#11243A"/>
+          <!-- smile -->
+          <path d="M44 50 Q 50 53 56 50" stroke="#7A1820" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+          <!-- cheek blush -->
+          <ellipse cx="38" cy="48" rx="2.2" ry="1.4" fill="#FF8FA0" opacity="0.8"/>
+          <ellipse cx="62" cy="48" rx="2.2" ry="1.4" fill="#FF8FA0" opacity="0.8"/>
+        </svg>
+        <div class="speech">Hi lah!</div>
+
+        <!-- Smooth flowing water -->
+        <div class="water">
+          <svg class="wA" viewBox="0 0 1440 80" preserveAspectRatio="none">
+            <path d="M0,40 C200,80 400,0 720,40 C1040,80 1240,0 1440,40 L1440,80 L0,80 Z" fill="#1B7E96"/>
+            <path d="M1440,40 C1640,80 1840,0 2160,40 C2480,80 2680,0 2880,40 L2880,80 L1440,80 Z" fill="#1B7E96"/>
+          </svg>
+          <svg class="wB" viewBox="0 0 1440 80" preserveAspectRatio="none">
+            <path d="M0,50 C220,20 420,80 720,50 C1020,20 1240,80 1440,50 L1440,80 L0,80 Z" fill="#0E3A52"/>
+            <path d="M1440,50 C1660,20 1860,80 2160,50 C2460,20 2680,80 2880,50 L2880,80 L1440,80 Z" fill="#0E3A52"/>
+          </svg>
+          <svg class="wC" viewBox="0 0 1440 80" preserveAspectRatio="none">
+            <path d="M0,60 C240,30 460,90 720,60 C980,30 1200,90 1440,60 L1440,80 L0,80 Z" fill="#062235"/>
+            <path d="M1440,60 C1680,30 1900,90 2160,60 C2420,30 2640,90 2880,60 L2880,80 L1440,80 Z" fill="#062235"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="preset-strip" aria-label="What's already done for you">
+      <div class="ps ps-zap">
+        <span class="ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h7l-2 8 11-14h-7l1-6z"/></svg>
+        </span>
+        <div class="ps-body">
+          <div class="t">Pre-tuned</div>
+          <div class="d">Skills, prompts &amp; memory ready.</div>
+        </div>
+      </div>
+      <div class="ps ps-lock">
+        <span class="ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a5 5 0 00-5 5v3H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2v-9a2 2 0 00-2-2h-2V7a5 5 0 00-5-5zm0 2a3 3 0 013 3v3H9V7a3 3 0 013-3z"/></svg>
+        </span>
+        <div class="ps-body">
+          <div class="t">Private</div>
+          <div class="d">Nothing leaves the USB drive.</div>
+        </div>
+      </div>
+      <div class="ps ps-merl">
+        <span class="ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 21V10l4-3v3l4-3v3l4-3v3l4-3v14H3zm3-2h2v-3H6v3zm4 0h2v-3h-2v3zm4 0h2v-3h-2v3z"/></svg>
+        </span>
+        <div class="ps-body">
+          <div class="t">SG workplace</div>
+          <div class="d">5 skills for daily office work.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" data-go="1">Plug in a key →</button>
+      <a class="btn btn-ghost" href="https://github.com/openclaw/openclaw" target="_blank">What is OpenClaw?</a>
+    </div>
+  </section>
+
+  <!-- Step 1: Pick model -->
+  <section class="section" data-step="1">
+    <div class="tut">
+      <div class="tut-lob"><svg class="lob-svg" viewBox="0 0 100 100" aria-hidden="true"><use href="#sg-lobster"/></svg></div>
+      <div class="tut-bubble">
+        <h4>Time to pick your AI brain. 🧠</h4>
+        <ul>
+          <li>Already have a key for one? <b>Pick that.</b></li>
+          <li>Total newbie? <b>Gemini</b> has a free tier — no card.</li>
+          <li>Best value: <b>DeepSeek</b>, ~10× cheaper than GPT-4o.</li>
+          <li>Best at writing: <b>Claude</b>.</li>
+        </ul>
+        <div class="tut-actions">
+          <button class="tut-skip" data-tut-skip>Skip</button>
+          <button class="tut-next" data-tut-next>Next →</button>
+        </div>
+      </div>
+    </div>
+    <button class="tut-reopen" data-tut-reopen aria-label="Show tutorial again">?</button>
+    <div class="eyebrow">Step 1 of 4</div>
+    <h1>Pick your <em>brain</em>.</h1>
+    <p class="lede">All four are popular in Singapore. Pick what you already have a key for — or grab one in 60 seconds.</p>
+    <div class="grid g2" id="modelGrid"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" data-go="0">← Back</button>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" id="next1" disabled data-go="2">Next →</button>
+    </div>
+  </section>
+
+  <!-- Step 2: API Key -->
+  <section class="section" data-step="2">
+    <div class="tut">
+      <div class="tut-lob"><svg class="lob-svg" viewBox="0 0 100 100" aria-hidden="true"><use href="#sg-lobster"/></svg></div>
+      <div class="tut-bubble">
+        <h4>No API key yet? Here's the whole flow. 🔑</h4>
+        <ol>
+          <li>Click the <b>sign-up link</b> on the next page.</li>
+          <li>Make an account with your email.</li>
+          <li>Find <b>"API Keys"</b> in the dashboard.</li>
+          <li>Click <b>"Create new key"</b>, name it <code>sg-claw</code>.</li>
+          <li>Copy the key — starts with <code>sk-...</code></li>
+          <li>Paste it back here. Done!</li>
+        </ol>
+        <div class="tut-actions">
+          <button class="tut-skip" data-tut-skip>Skip</button>
+          <button class="tut-next" data-tut-next>Next →</button>
+        </div>
+      </div>
+    </div>
+    <button class="tut-reopen" data-tut-reopen aria-label="Show tutorial again">?</button>
+    <div class="eyebrow">Step 2 of 4</div>
+    <h1>Plug in your <em id="kProv">model</em> key.</h1>
+    <p class="lede" id="kSub">No key yet? <a id="kSignup" target="_blank" rel="noopener">Open sign-up →</a> Takes about a minute.</p>
+    <div id="customFields" style="display:none;">
+      <div class="field">
+        <label>API base URL</label>
+        <input type="text" id="customBase" placeholder="https://api.example.com/v1">
+      </div>
+      <div class="field">
+        <label>Model name</label>
+        <input type="text" id="customModel" placeholder="e.g. gpt-4o">
+      </div>
+    </div>
+    <div class="field">
+      <label for="apiKey">API Key</label>
+      <div class="input-wrap">
+        <input id="apiKey" type="password" autocomplete="off" placeholder="sk-...">
+        <button class="toggle-pw" type="button" onclick="togglePw()">👁</button>
+      </div>
+      <div class="hint">Stored locally on this drive — never sent anywhere except <span id="kProv2">your model</span>.</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" data-go="1">← Back</button>
+      <button class="btn btn-soft" id="skipKey" data-go="3">Skip for now</button>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" id="next2" data-go="3">Next →</button>
+    </div>
+  </section>
+
+  <!-- Step 3: Channels -->
+  <section class="section" data-step="3">
+    <div class="tut">
+      <div class="tut-lob"><svg class="lob-svg" viewBox="0 0 100 100" aria-hidden="true"><use href="#sg-lobster"/></svg></div>
+      <div class="tut-bubble">
+        <h4>Want me in your chats? 💬</h4>
+        <ul>
+          <li><b>WhatsApp</b> — pair with a QR code, like WhatsApp Web.</li>
+          <li><b>Telegram</b> — message <b>@BotFather</b> → <code>/newbot</code> → copy token.</li>
+          <li>Or skip — wire these up later from the dashboard.</li>
+        </ul>
+        <div class="tut-actions">
+          <button class="tut-skip" data-tut-skip>Skip</button>
+          <button class="tut-next" data-tut-next>Next →</button>
+        </div>
+      </div>
+    </div>
+    <button class="tut-reopen" data-tut-reopen aria-label="Show tutorial again">?</button>
+    <div class="eyebrow">Step 3 of 4</div>
+    <h1>Connect your <em>chats</em>.</h1>
+    <p class="lede">WhatsApp and Telegram dominate in Singapore. Optional — skip and just talk to AI in the dashboard.</p>
+    <div class="ch-grid">
+      <div>
+        <button class="pick" id="cardWa" type="button" onclick="toggleChannel('whatsapp')">
+          <span class="ico">💚</span>
+          <div class="body">
+            <h4>WhatsApp <span class="tag rec">SG default</span></h4>
+            <p>Pair via QR code after launch. Reply drafts in your own chats.</p>
+          </div>
+          <span class="check">✓</span>
+        </button>
+        <div class="channel-form" id="formWa">
+          <div class="field">
+            <label>Your WhatsApp number (optional)</label>
+            <input type="text" id="ch-wa-phone" placeholder="+65 9123 4567">
+            <div class="hint">QR pairing happens in the dashboard. Number is for label only.</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <button class="pick" id="cardTg" type="button" onclick="toggleChannel('telegram')">
+          <span class="ico">✈️</span>
+          <div class="body">
+            <h4>Telegram</h4>
+            <p>Bot token from <a href="https://t.me/BotFather" target="_blank" rel="noopener">@BotFather</a> — 3 clicks.</p>
+          </div>
+          <span class="check">✓</span>
+        </button>
+        <div class="channel-form" id="formTg">
+          <div class="field">
+            <label>Bot token</label>
+            <input type="text" id="ch-tg-token" placeholder="123456:ABC-DEF...">
+            <div class="hint">/newbot in <a href="https://t.me/BotFather" target="_blank" rel="noopener">@BotFather</a> → copy token.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" data-go="2">← Back</button>
+      <button class="btn btn-soft" data-go="4" id="skipCh">Skip for now</button>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" data-go="4">Next →</button>
+    </div>
+  </section>
+
+  <!-- Step 4: Skills -->
+  <section class="section" data-step="4">
+    <div class="tut">
+      <div class="tut-lob"><svg class="lob-svg" viewBox="0 0 100 100" aria-hidden="true"><use href="#sg-lobster"/></svg></div>
+      <div class="tut-bubble">
+        <h4>Last step — pick your daily helpers. ⚡</h4>
+        <ul>
+          <li>📧 <b>Inbox Triage</b> — sort emails, draft replies.</li>
+          <li>🗒️ <b>Meeting Minutes</b> — notes → action items.</li>
+          <li>📊 <b>Deck Drafter</b> — outline pitches & QBRs.</li>
+          <li>📈 <b>Sheet Wizard</b> — Excel formulas & light SQL.</li>
+          <li>🌏 <b>Bilingual Comms</b> — EN ↔ 中文 / Malay / Tamil.</li>
+        </ul>
+        <div class="tut-actions">
+          <button class="tut-skip" data-tut-skip>Skip</button>
+          <button class="tut-next" data-tut-next>Next →</button>
+        </div>
+      </div>
+    </div>
+    <button class="tut-reopen" data-tut-reopen aria-label="Show tutorial again">?</button>
+    <div class="eyebrow">Step 4 of 4</div>
+    <h1>Pick your daily <em>helpers</em>.</h1>
+    <p class="lede">Five Singapore-flavoured skills, pre-tuned and ready to load.</p>
+    <div class="row-tip">
+      <span class="small">Tap to toggle. Recommended: pick 2–3.</span>
+      <button class="linklike" id="pickAll">Pick all</button>
+    </div>
+    <div class="grid g1" id="skillGrid"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" data-go="3">← Back</button>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" id="finishBtn">Finish & launch →</button>
+    </div>
+  </section>
+
+  <!-- Done -->
+  <section class="section" data-step="5">
+    <div class="done-wrap">
+      <div class="done-emoji">🦞🎉</div>
+      <h1 style="margin-top:12px;">You're <em>set</em>!</h1>
+      <p class="lede" id="doneSummary" style="margin: 10px auto 14px;">Saving your config and launching the dashboard…</p>
+      <div class="btn-row" style="justify-content: center;">
+        <button class="btn btn-primary" id="goDashboard">Open dashboard</button>
+        <button class="btn btn-ghost" data-go="0">Run setup again</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div class="foot">SG-Claw · part of the OpenClaw community · MIT</div>
+
 <div class="toast" id="toast"></div>
+<div class="confetti" id="confetti" aria-hidden="true"></div>
 
 <script>
-// --- State ---
-let selectedProvider = null;
-let selectedBase = '';
-let selectedModel = '';
+// ---------- Data ----------
+const MODELS = [
+  {
+    id: 'anthropic',
+    name: 'Claude',
+    emoji: '🌟',
+    base: '',
+    model: 'claude-sonnet-4-5',
+    api: 'anthropic',
+    tag: 'smart', tagText: 'Smartest',
+    desc: 'Best reasoning & writing. Great daily driver.',
+    micro: 'About US$3 / million input tokens',
+    signup: 'https://console.anthropic.com/'
+  },
+  {
+    id: 'openai',
+    name: 'OpenAI GPT-4o',
+    emoji: '🧠',
+    base: 'https://api.openai.com/v1',
+    model: 'gpt-4o',
+    tag: 'rec', tagText: 'Popular',
+    desc: 'Reliable all-rounder. Strong tool use.',
+    micro: 'Pay-as-you-use, no minimum',
+    signup: 'https://platform.openai.com/api-keys'
+  },
+  {
+    id: 'gemini',
+    name: 'Google Gemini',
+    emoji: '🔷',
+    base: 'https://generativelanguage.googleapis.com/v1beta/openai',
+    model: 'gemini-2.5-flash',
+    tag: 'fast', tagText: 'Fast & free tier',
+    desc: 'Generous free quota. Long-context friendly.',
+    micro: 'Free tier: 15 req/min, 1M tokens/day',
+    signup: 'https://aistudio.google.com/apikey'
+  },
+  {
+    id: 'deepseek',
+    name: 'DeepSeek',
+    emoji: '🐬',
+    base: 'https://api.deepseek.com/v1',
+    model: 'deepseek-chat',
+    tag: 'value', tagText: 'Best value',
+    desc: 'Cheapest of the four. Strong at coding.',
+    micro: 'Roughly 1/10th the price of GPT-4o',
+    signup: 'https://platform.deepseek.com/api_keys'
+  },
+];
 
-// --- Model cards ---
-document.querySelectorAll('#step1 .model-card').forEach(card => {
-    card.addEventListener('click', (e) => {
-        if (e.target.closest('.buy-link')) return;
-        document.querySelectorAll('#step1 .model-card').forEach(c => c.classList.remove('selected'));
-        card.classList.add('selected');
-        selectedProvider = card.dataset.provider;
-        selectedBase = card.dataset.base;
-        selectedModel = card.dataset.model;
-        document.getElementById('nextStep1').disabled = false;
-    });
+const SKILLS = [
+  { id: 'inbox-triage',      emoji: '📧', name: 'Inbox Triage',     desc: 'Triage emails, draft replies in 3 tones (formal · firm · friendly).', tools: 'clipboard, translate' },
+  { id: 'meeting-minutes',   emoji: '🗒️', name: 'Meeting Minutes',   desc: 'Notes / transcripts → clean minutes, action items, follow-up email.', tools: 'clipboard' },
+  { id: 'deck-drafter',      emoji: '📊', name: 'Deck Drafter',     desc: 'Outline pitch decks, QBR & status reports. Bullets → speaker notes.', tools: 'clipboard' },
+  { id: 'sheet-wizard',      emoji: '📈', name: 'Sheet Wizard',     desc: 'Excel formulas, pivots, light SQL, data cleanup recipes.',            tools: 'code, clipboard' },
+  { id: 'bilingual-comms',   emoji: '🌏', name: 'Bilingual Comms',  desc: 'EN ↔ 中文 / Bahasa / Tamil for SG, China & SEA clients.',             tools: 'translate, clipboard' },
+];
+
+// ---------- State ----------
+const state = {
+  step: 0,
+  model: null,           // MODELS[i].id
+  apiKey: '',
+  customBase: '', customModel: '',
+  channels: { whatsapp: { on: false, phone: '' }, telegram: { on: false, token: '' } },
+  skills: new Set(),
+};
+const TOTAL_STEPS = 5; // 0..4 then done(5)
+
+// ---------- Helpers ----------
+const $ = sel => document.querySelector(sel);
+const $$ = sel => document.querySelectorAll(sel);
+
+function getPort() {
+  const p = new URLSearchParams(location.search).get('port');
+  return p || '18789';
+}
+function showToast(msg, isError) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => t.className = 'toast', 2400);
+}
+function togglePw() {
+  const inp = $('#apiKey');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+// ---------- Stepper ----------
+function renderStepper() {
+  const bar = $('#stepper');
+  bar.innerHTML = '';
+  // Show stepper for steps 1..4 only (hide on welcome/done)
+  if (state.step < 1 || state.step > 4) { bar.style.display = 'none'; return; }
+  bar.style.display = 'flex';
+  for (let i = 1; i <= 4; i++) {
+    const seg = document.createElement('div');
+    seg.className = 'seg' + (i < state.step ? ' done' : (i === state.step ? ' cur' : ''));
+    bar.appendChild(seg);
+  }
+}
+
+// ---------- Tutorial state ----------
+const TUT_KEY = 'sgclaw.tut.v1';
+const tutState = (() => {
+  try { return JSON.parse(localStorage.getItem(TUT_KEY) || '{}'); } catch (_) { return {}; }
+})();
+function tutSave() { try { localStorage.setItem(TUT_KEY, JSON.stringify(tutState)); } catch (_) {} }
+function shouldShowTut(n) {
+  if (tutState.skipAll) return false;
+  if (tutState['shown_' + n]) return false;
+  return n >= 1 && n <= 4;
+}
+
+function applyTutMode(n) {
+  $$('.section').forEach(s => s.classList.remove('tut-mode'));
+  const sec = document.querySelector(`.section[data-step="${n}"]`);
+  if (!sec) return;
+  if (shouldShowTut(n)) {
+    sec.classList.add('tut-mode');
+    sec.removeAttribute('data-tut-dismissed');
+  } else if (n >= 1 && n <= 4) {
+    sec.setAttribute('data-tut-dismissed', '1');
+  }
+}
+
+document.addEventListener('click', e => {
+  const next = e.target.closest('[data-tut-next]');
+  const skip = e.target.closest('[data-tut-skip]');
+  if (next || skip) {
+    e.preventDefault();
+    const trigger = next || skip;
+    const sec = trigger.closest('.section');
+    if (!sec) return;
+    const n = Number(sec.dataset.step);
+    tutState['shown_' + n] = true;
+    if (skip) tutState.skipAll = true;
+    tutSave();
+    sec.classList.remove('tut-mode');
+    sec.setAttribute('data-tut-dismissed', '1');
+    return;
+  }
+  const reopen = e.target.closest('[data-tut-reopen]');
+  if (reopen) {
+    e.preventDefault();
+    const sec = reopen.closest('.section');
+    if (!sec) return;
+    sec.classList.add('tut-mode');
+    sec.removeAttribute('data-tut-dismissed');
+    return;
+  }
 });
 
-document.getElementById('nextStep1').addEventListener('click', () => goStep(2));
-
-// --- Steps ---
-function goStep(n) {
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.getElementById('step' + n).classList.add('active');
-    document.querySelectorAll('.steps .step').forEach((s, i) => {
-        s.classList.remove('active', 'done');
-        if (i + 1 < n) s.classList.add('done');
-        if (i + 1 === n) s.classList.add('active');
-    });
-    if (n === 2) setupStep2();
+function go(n) {
+  state.step = n;
+  $$('.section').forEach(s => s.classList.toggle('active', Number(s.dataset.step) === n));
+  renderStepper();
+  if (n === 1) renderModels();
+  if (n === 2) renderApiStep();
+  if (n === 4) renderSkills();
+  if (n === 5) renderDone();
+  applyTutMode(n);
 }
 
-const PROVIDER_NAMES = {
-    deepseek: 'DeepSeek',
-    openai: 'OpenAI',
-    anthropic: 'Claude',
-    gemini: 'Gemini',
-    custom: 'Custom API'
-};
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-go]');
+  if (t) { e.preventDefault(); go(Number(t.dataset.go)); }
+});
+$('#restartBtn').addEventListener('click', () => {
+  for (const k of Object.keys(tutState)) delete tutState[k];
+  tutSave();
+  $$('[data-tut-skipall]').forEach(el => el.checked = false);
+  $$('.section').forEach(s => s.removeAttribute('data-tut-dismissed'));
+  go(0);
+});
 
-function setupStep2() {
-    var isCustom = selectedProvider === 'custom';
-    document.getElementById('customFields').style.display = isCustom ? 'block' : 'none';
-
-    var name = PROVIDER_NAMES[selectedProvider] || selectedProvider || 'provider';
-    document.getElementById('step2desc').textContent = 'Paste your ' + name + ' API key. It stays on this drive.';
-
-    var card = document.querySelector('#step1 .model-card[data-provider="' + selectedProvider + '"]');
-    var buyLink = card ? card.querySelector('.buy-link') : null;
-    var linksDiv = document.getElementById('providerLinks');
-    linksDiv.innerHTML = '';
-    if (buyLink) {
-        linksDiv.innerHTML = '<a href="' + buyLink.href + '" target="_blank" rel="noopener">' + name + ' API key</a>';
-    }
-    linksDiv.innerHTML +=
-        '<a href="https://platform.deepseek.com/" target="_blank" rel="noopener">DeepSeek</a>' +
-        '<a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">OpenAI</a>' +
-        '<a href="https://console.anthropic.com/" target="_blank" rel="noopener">Claude</a>' +
-        '<a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Gemini</a>';
+// ---------- Step 1: Models ----------
+function renderModels() {
+  const g = $('#modelGrid'); g.innerHTML = '';
+  MODELS.forEach(m => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'pick' + (state.model === m.id ? ' selected' : '');
+    b.innerHTML = `
+      <span class="ico">${m.emoji}</span>
+      <div class="body">
+        <h4>${m.name} <span class="tag ${m.tag}">${m.tagText}</span></h4>
+        <p>${m.desc}</p>
+        <div class="micro">${m.micro}</div>
+      </div>
+      <span class="check">✓</span>
+    `;
+    b.onclick = () => { state.model = m.id; renderModels(); $('#next1').disabled = false; };
+    g.appendChild(b);
+  });
+  $('#next1').disabled = !state.model;
 }
 
-// --- Toggle password ---
-function togglePw(id) {
-    var inp = document.getElementById(id);
-    var btn = inp.parentElement.querySelector('.toggle-pw');
-    if (inp.type === 'password') { inp.type = 'text'; btn.textContent = 'Hide'; }
-    else { inp.type = 'password'; btn.textContent = 'Show'; }
+// ---------- Step 2: API key ----------
+function renderApiStep() {
+  const m = MODELS.find(x => x.id === state.model) || MODELS[0];
+  $('#kProv').textContent = m.name;
+  $('#kProv2').textContent = m.name;
+  $('#kSignup').href = m.signup;
+  $('#kSignup').textContent = `Open ${m.name} sign-up →`;
+  $('#customFields').style.display = (m.id === 'custom') ? 'block' : 'none';
+  $('#apiKey').value = state.apiKey;
+  setTimeout(() => $('#apiKey').focus(), 80);
 }
+$('#next2').addEventListener('click', () => {
+  state.apiKey = $('#apiKey').value.trim();
+  state.customBase = $('#customBase')?.value.trim() || '';
+  state.customModel = $('#customModel')?.value.trim() || '';
+});
+$('#apiKey').addEventListener('input', e => state.apiKey = e.target.value.trim());
+$('#apiKey').addEventListener('keydown', e => { if (e.key === 'Enter') { state.apiKey = e.target.value.trim(); go(3); } });
 
-// --- Build OpenClaw config ---
-function buildConfig(provider, base, model, apiKey) {
-    var baseConfig = {
-        gateway: { auth: { mode: 'token', token: 'uclaw' } },
-        commands: { native: 'auto', nativeSkills: 'auto', restart: true, ownerDisplay: 'raw' },
-        meta: { lastTouchedVersion: '2026.3.13', lastTouchedAt: new Date().toISOString() }
+// ---------- Step 3: Channels ----------
+function toggleChannel(type) {
+  const map = { whatsapp: { card: '#cardWa', form: '#formWa' }, telegram: { card: '#cardTg', form: '#formTg' } };
+  const card = $(map[type].card), form = $(map[type].form);
+  const open = form.classList.toggle('open');
+  card.classList.toggle('selected', open);
+  state.channels[type].on = open;
+  if (open) {
+    const inp = form.querySelector('input');
+    if (inp) setTimeout(() => inp.focus(), 120);
+  }
+}
+document.addEventListener('input', e => {
+  if (e.target.id === 'ch-wa-phone') state.channels.whatsapp.phone = e.target.value.trim();
+  if (e.target.id === 'ch-tg-token') state.channels.telegram.token = e.target.value.trim();
+});
+
+// ---------- Step 4: Skills ----------
+function renderSkills() {
+  const g = $('#skillGrid'); g.innerHTML = '';
+  SKILLS.forEach(s => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'pick' + (state.skills.has(s.id) ? ' selected' : '');
+    b.innerHTML = `
+      <span class="ico">${s.emoji}</span>
+      <div class="body">
+        <h4>${s.name}</h4>
+        <p>${s.desc}</p>
+        <div class="micro">Tools: ${s.tools}</div>
+      </div>
+      <span class="check">✓</span>
+    `;
+    b.onclick = () => {
+      if (state.skills.has(s.id)) state.skills.delete(s.id);
+      else state.skills.add(s.id);
+      renderSkills();
     };
+    g.appendChild(b);
+  });
+}
+$('#pickAll').addEventListener('click', () => {
+  if (state.skills.size === SKILLS.length) state.skills = new Set();
+  else state.skills = new Set(SKILLS.map(s => s.id));
+  renderSkills();
+});
 
-    var providerName = provider || 'myProvider';
-    var providers = {};
-    providers[providerName] = {
-        baseUrl: base,
-        apiKey: apiKey,
-        api: 'openai-completions',
-        models: [{
-            id: model,
-            name: model,
+// ---------- Finish ----------
+$('#finishBtn').addEventListener('click', async () => {
+  go(5);
+  await saveConfig();
+  fireConfetti();
+});
+$('#goDashboard').addEventListener('click', () => {
+  window.open('http://127.0.0.1:' + getPort() + '/#token=uclaw', '_blank');
+});
+
+function buildOpenClawConfig() {
+  const m = MODELS.find(x => x.id === state.model);
+  const baseConfig = {
+    gateway: { mode: 'local', auth: { mode: 'token', token: 'uclaw' } },
+    commands: { native: 'auto', nativeSkills: 'auto', restart: true, ownerDisplay: 'raw' },
+    meta: { lastTouchedVersion: 'sg-claw', lastTouchedAt: new Date().toISOString() },
+  };
+  const cfg = { ...baseConfig };
+
+  if (m && state.apiKey) {
+    cfg.models = {
+      mode: 'merge',
+      providers: {
+        [m.id]: {
+          apiKey: state.apiKey,
+          api: m.api || 'openai-completions',
+          models: [{
+            id: m.model,
+            name: m.model,
             reasoning: false,
             input: ['text'],
             cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
             contextWindow: 128000,
-            maxTokens: 8192
-        }]
+            maxTokens: 8192,
+          }],
+        },
+      },
     };
-    return Object.assign({}, baseConfig, {
-        models: { mode: 'merge', providers: providers },
-        agents: { defaults: { model: { primary: providerName + '/' + model } } }
-    });
+    if (m.base) cfg.models.providers[m.id].baseUrl = m.base;
+    cfg.agents = { defaults: { model: { primary: m.id + '/' + m.model } } };
+  }
+
+  if (state.skills.size) {
+    cfg.agents = cfg.agents || { defaults: {} };
+    cfg.agents.defaults = cfg.agents.defaults || {};
+    cfg.agents.defaults.skills = [...state.skills];
+  }
+
+  // Channels
+  const ch = {};
+  if (state.channels.telegram.on && state.channels.telegram.token) {
+    ch.telegram = { enabled: true, botToken: state.channels.telegram.token, dmPolicy: 'pairing' };
+  }
+  if (state.channels.whatsapp.on) {
+    ch.whatsapp = { enabled: true, selfChatMode: true, dmPolicy: 'pairing' };
+    if (state.channels.whatsapp.phone) ch.whatsapp.defaultTo = state.channels.whatsapp.phone;
+  }
+  if (Object.keys(ch).length) cfg.channels = ch;
+  return cfg;
 }
 
-function mergeConfig(existing, next) {
-    existing = existing || {};
-    delete existing.agent;
-
-    var merged = Object.assign({}, existing, next);
-    if (existing.models && next.models) {
-        merged.models = Object.assign({}, existing.models, next.models);
-        merged.models.providers = Object.assign({}, existing.models.providers || {}, next.models.providers || {});
-    }
-    if (existing.channels && !next.channels) {
-        merged.channels = existing.channels;
-    } else if (existing.channels && next.channels) {
-        merged.channels = Object.assign({}, existing.channels, next.channels);
-    }
-    return merged;
-}
-
-// --- Save model config ---
 async function saveConfig() {
-    var apiKey = document.getElementById('apiKey').value.trim();
-    if (!apiKey) { showToast('Please enter an API key', true); return; }
-
-    var base = selectedBase;
-    var model = selectedModel;
-
-    if (selectedProvider === 'custom') {
-        base = document.getElementById('customBase').value.trim();
-        model = document.getElementById('customModel').value.trim();
-        if (!base || !model) { showToast('Please enter the API base URL and model name', true); return; }
+  try {
+    const next = buildOpenClawConfig();
+    // Merge with anything pre-existing so we don't overwrite unrelated keys
+    let existing = {};
+    try { existing = await fetch('/api/config').then(r => r.ok ? r.json() : {}); } catch (_) {}
+    delete existing.agent; // clear deprecated key
+    delete existing.sgclaw; // not part of OpenClaw's strict config schema
+    if (existing.meta) delete existing.meta.edition;
+    if (existing.gateway?.auth) delete existing.gateway.auth.scopes;
+    const merged = { ...existing, ...next };
+    if (existing.models && next.models) {
+      merged.models = { ...existing.models, ...next.models };
+      merged.models.providers = { ...(existing.models.providers || {}), ...(next.models.providers || {}) };
     }
-
-    var nextConfig = buildConfig(selectedProvider, base, model, apiKey);
-
-    try {
-        var existingRes = await fetch('/api/config');
-        var existing = existingRes.ok ? await existingRes.json() : {};
-        var config = mergeConfig(existing, nextConfig);
-        var res = await fetch('/api/config', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(config)
-        });
-        if (!res.ok) throw new Error('Save failed');
-        showToast('Config saved');
-        goStep(3);
-    } catch (e) {
-        showToast('Save failed: ' + e.message, true);
+    if (existing.channels && next.channels) {
+      merged.channels = { ...existing.channels, ...next.channels };
     }
-}
-
-// --- Channel toggle ---
-function toggleChannel(card, type) {
-    var form = document.getElementById('form-' + type);
-    var isOpen = form.classList.contains('open');
-    if (isOpen) {
-        form.classList.remove('open');
-        card.classList.remove('selected');
-    } else {
-        form.classList.add('open');
-        card.classList.add('selected');
-        var firstInput = form.querySelector('input');
-        if (firstInput) setTimeout(function() { firstInput.focus(); }, 100);
+    const res = await fetch('/api/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(merged),
+    });
+    if (!res.ok) throw new Error('save failed');
+    await new Promise(resolve => setTimeout(resolve, 900));
+    const persisted = await fetch('/api/config').then(r => r.ok ? r.json() : {});
+    if (next.agents?.defaults?.model?.primary &&
+        persisted.agents?.defaults?.model?.primary !== next.agents.defaults.model.primary) {
+      throw new Error('config rejected by OpenClaw');
     }
+    const summary = renderDoneSummary();
+    $('#doneSummary').innerHTML = summary;
+  } catch (e) {
+    $('#doneSummary').innerHTML = 'Saved locally. <span style="color:var(--accent);">Note: config server not reachable — open the dashboard from the launcher.</span>';
+  }
 }
 
-// --- Save channels and open dashboard ---
-async function saveChannelsAndOpen() {
-    var channels = {};
+function renderDoneSummary() {
+  const m = MODELS.find(x => x.id === state.model);
+  const skills = [...state.skills].map(id => SKILLS.find(s => s.id === id).name);
+  const chans = Object.entries(state.channels).filter(([_, v]) => v.on).map(([k]) => k === 'whatsapp' ? 'WhatsApp' : 'Telegram');
+  const parts = [];
+  if (m) parts.push(`<strong>${m.name}</strong>`);
+  if (chans.length) parts.push(chans.join(' · '));
+  if (skills.length) parts.push(skills.join(' · '));
+  return parts.length
+    ? `Loaded with ${parts.join(' &middot; ')}.`
+    : 'Setup saved. Open the dashboard whenever you\'re ready.';
+}
 
-    var waCard = document.getElementById('form-whatsapp').closest('.channel-card');
-    var waPhone = document.getElementById('ch-whatsapp-phone').value.trim();
-    if (waCard.classList.contains('selected')) {
-        channels.whatsapp = { enabled: true, phone: waPhone, pairing: 'qr' };
+function renderDone() {
+  // populated after saveConfig resolves; show a holding line first
+  $('#doneSummary').textContent = 'Saving your config and launching the dashboard…';
+}
+
+function fireConfetti() {
+  const colors = ['#ED2E38', '#FFC857', '#4DD0E1', '#FF6B8B', '#1B7E96', '#2E8B57'];
+  const root = $('#confetti');
+  for (let i = 0; i < 60; i++) {
+    const c = document.createElement('i');
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+    c.style.animationDuration = (1.6 + Math.random() * 1.6) + 's';
+    c.style.animationDelay = (Math.random() * 0.4) + 's';
+    c.style.transform = `rotate(${Math.random() * 360}deg)`;
+    root.appendChild(c);
+    setTimeout(() => c.remove(), 4000);
+  }
+}
+
+// ---------- Restore ----------
+async function loadExisting() {
+  try {
+    const res = await fetch('/api/config');
+    if (!res.ok) return;
+    const cfg = await res.json();
+    // Restore model selection
+    if (cfg.models && cfg.models.providers) {
+      const id = Object.keys(cfg.models.providers).find(k => MODELS.some(m => m.id === k));
+      if (id) {
+        state.model = id;
+        const p = cfg.models.providers[id];
+        if (p && p.apiKey) state.apiKey = p.apiKey;
+      }
     }
-
-    var tgToken = document.getElementById('ch-telegram-token').value.trim();
-    if (tgToken) channels.telegram = { enabled: true, token: tgToken, dmPolicy: 'pairing' };
-
-    if (Object.keys(channels).length > 0) {
-        try {
-            var res = await fetch('/api/config');
-            var existing = res.ok ? await res.json() : {};
-            delete existing.agent;
-            existing.channels = Object.assign(existing.channels || {}, channels);
-            await fetch('/api/config', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(existing)
-            });
-            showToast('Channel config saved');
-        } catch(e) {}
+    // Restore channels
+    if (cfg.channels) {
+      if (cfg.channels.telegram?.token) {
+        state.channels.telegram = { on: true, token: cfg.channels.telegram.token };
+      }
+      if (cfg.channels.whatsapp) {
+        state.channels.whatsapp = { on: !!cfg.channels.whatsapp.enabled, phone: cfg.channels.whatsapp.phone || '' };
+      }
     }
-
-    window.open(gatewayUrl(), '_blank');
-}
-
-// --- View config ---
-async function viewConfig() {
-    try {
-        var res = await fetch('/api/config');
-        var config = await res.json();
-        var text = JSON.stringify(config, null, 2);
-        var w = window.open('', '_blank');
-        w.document.write('<pre style="background:#111;color:#eee;padding:20px;font-size:14px;white-space:pre-wrap;">' +
-            text.replace(/</g, '&lt;') + '</pre>');
-    } catch (e) {
-        showToast('Could not read config: ' + e.message, true);
+    // Restore skills
+    if (cfg.sgclaw && Array.isArray(cfg.sgclaw.skills)) {
+      state.skills = new Set(cfg.sgclaw.skills);
     }
+  } catch (_) {}
 }
 
-// --- Toast ---
-function showToast(msg, isError) {
-    var t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = 'toast show' + (isError ? ' error' : '');
-    setTimeout(function() { t.className = 'toast'; }, 2800);
-}
-
-// --- Find active gateway port (18789-18799) ---
-var _gatewayPort = null;
-async function findGatewayPort() {
-    for (var p = 18789; p <= 18799; p++) {
-        try {
-            await fetch('http://127.0.0.1:' + p + '/', { mode: 'no-cors' });
-            _gatewayPort = p;
-            return p;
-        } catch(e) {}
-    }
-    _gatewayPort = null;
-    return null;
-}
-
-function gatewayUrl() {
-    var p = _gatewayPort || 18789;
-    return 'http://127.0.0.1:' + p + '/#token=uclaw';
-}
-
-// --- Check gateway status ---
-async function checkGateway() {
-    var dot = document.getElementById('statusDot');
-    var text = document.getElementById('statusText');
-    var port = await findGatewayPort();
-    if (port) {
-        dot.className = 'dot on';
-        text.innerHTML = 'Gateway running on port ' + port + ' · <a href="' + gatewayUrl() + '" target="_blank">Open dashboard</a>';
-        document.getElementById('gatewayUrl').textContent = 'http://127.0.0.1:' + port;
-    } else {
-        dot.className = 'dot off';
-        text.innerHTML = 'Gateway not detected. Start Mac-Start.command or Windows-Start.bat first.';
-    }
-}
-
-// --- Load existing config ---
-async function loadConfig() {
-    try {
-        var res = await fetch('/api/config');
-        var cfg = await res.json();
-
-        if (cfg.models && cfg.models.providers) {
-            var primary = cfg.agents && cfg.agents.defaults && cfg.agents.defaults.model && cfg.agents.defaults.model.primary;
-            var providerName = primary ? primary.split('/')[0] : Object.keys(cfg.models.providers)[0];
-            if (providerName) {
-                var p = cfg.models.providers[providerName];
-                var card = document.querySelector('#step1 .model-card[data-provider="' + providerName + '"]');
-                if (card) card.click();
-                if (p && p.apiKey) document.getElementById('apiKey').value = p.apiKey;
-            }
-        }
-
-        if (cfg.channels) {
-            if (cfg.channels.telegram && cfg.channels.telegram.token) {
-                document.getElementById('ch-telegram-token').value = cfg.channels.telegram.token;
-            }
-            if (cfg.channels.whatsapp) {
-                document.getElementById('ch-whatsapp-phone').value = cfg.channels.whatsapp.phone || '';
-            }
-        }
-    } catch(e) {}
-}
-
-loadConfig();
-checkGateway();
-setInterval(checkGateway, 10000);
+// Init
+(async () => {
+  await loadExisting();
+  // Restore form fields when revisiting
+  if (state.apiKey) $('#apiKey').value = state.apiKey;
+  if (state.channels.whatsapp.on) toggleChannel('whatsapp');
+  if (state.channels.telegram.on) toggleChannel('telegram');
+  // Optional ?step=
+  const sp = new URLSearchParams(location.search).get('step');
+  go(sp ? Number(sp) : 0);
+})();
 </script>
 </body>
 </html>

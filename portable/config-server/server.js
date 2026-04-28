@@ -302,20 +302,55 @@ function handleWeChatCancel(sessionKey) {
   else activeLogins.clear();
 }
 
+function getRequestPath(req) {
+  return decodeURIComponent((req.url || '/').split('?')[0]);
+}
+
+function isAllowedBrowserOrigin(req) {
+  const origin = req.headers.origin;
+  if (!origin) return true;
+  try {
+    const url = new URL(origin);
+    return (url.hostname === '127.0.0.1' || url.hostname === 'localhost') && url.port === String(PORT);
+  } catch {
+    return false;
+  }
+}
+
+function writeJson(res, status, payload) {
+  res.writeHead(status, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify(payload));
+}
+
 const server = http.createServer((req, res) => {
-  // CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const requestPath = getRequestPath(req);
+  const origin = req.headers.origin;
+
+  if (origin && isAllowedBrowserOrigin(req)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+  }
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
-    res.writeHead(200);
+    if (!isAllowedBrowserOrigin(req)) {
+      res.writeHead(403);
+      res.end('Forbidden');
+      return;
+    }
+    res.writeHead(204);
     res.end();
     return;
   }
 
+  if (requestPath.startsWith('/api/') && !isAllowedBrowserOrigin(req)) {
+    writeJson(res, 403, { error: 'Forbidden origin' });
+    return;
+  }
+
   // API: WeChat start login
-  if (req.url === '/api/wechat/start' && req.method === 'POST') {
+  if (requestPath === '/api/wechat/start' && req.method === 'POST') {
     handleWeChatStart()
       .then(result => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -329,7 +364,7 @@ const server = http.createServer((req, res) => {
   }
 
   // API: WeChat poll status
-  if (req.url && req.url.startsWith('/api/wechat/status') && req.method === 'GET') {
+  if (requestPath.startsWith('/api/wechat/status') && req.method === 'GET') {
     const urlObj = new URL(req.url, 'http://localhost');
     const session = urlObj.searchParams.get('session');
     if (!session) {
@@ -350,7 +385,7 @@ const server = http.createServer((req, res) => {
   }
 
   // API: WeChat cancel
-  if (req.url === '/api/wechat/cancel' && req.method === 'POST') {
+  if (requestPath === '/api/wechat/cancel' && req.method === 'POST') {
     let body = '';
     req.on('data', chunk => body += chunk);
     req.on('end', () => {
@@ -368,7 +403,7 @@ const server = http.createServer((req, res) => {
   }
 
   // API: WeChat plugin status
-  if (req.url === '/api/wechat/plugin-status' && req.method === 'GET') {
+  if (requestPath === '/api/wechat/plugin-status' && req.method === 'GET') {
     const hasPlugin = fs.existsSync(path.join(USB_PLUGIN_DIR, 'openclaw.plugin.json'));
     const installed = fs.existsSync(path.join(INSTALLED_PLUGIN_DIR, 'openclaw.plugin.json'));
     res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -377,7 +412,7 @@ const server = http.createServer((req, res) => {
   }
 
   // API: Get config
-  if (req.url === '/api/config' && req.method === 'GET') {
+  if (requestPath === '/api/config' && req.method === 'GET') {
     try {
       const config = fs.existsSync(CONFIG_PATH)
         ? JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8'))
@@ -392,7 +427,7 @@ const server = http.createServer((req, res) => {
   }
 
   // API: Save config
-  if (req.url === '/api/config' && req.method === 'POST') {
+  if (requestPath === '/api/config' && req.method === 'POST') {
     let body = '';
     req.on('data', chunk => body += chunk);
     req.on('end', () => {
@@ -414,9 +449,20 @@ const server = http.createServer((req, res) => {
   }
 
   // Serve static files
-  const filePath = req.url === '/'
-    ? path.join(__dirname, 'public/index.html')
-    : path.join(__dirname, 'public', req.url);
+  let filePath;
+  if (requestPath === '/favicon.ico') {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><text y="52" font-size="52">🦞</text></svg>`;
+    res.writeHead(200, { 'Content-Type': 'image/svg+xml', 'Cache-Control': 'public, max-age=86400' });
+    res.end(svg);
+    return;
+  }
+  if (requestPath === '/' || requestPath === '/Config.html') {
+    filePath = path.join(__dirname, '../Config.html');
+  } else if (requestPath === '/Onboarding.html') {
+    filePath = path.join(__dirname, '../Onboarding.html');
+  } else {
+    filePath = path.join(__dirname, 'public', requestPath);
+  }
 
   if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
     const ext = path.extname(filePath);
@@ -436,7 +482,7 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, '127.0.0.1', () => {
-  console.log(`\n🦞 U-Claw Config Center`);
+  console.log(`\n🦀 SG Claw Config Center`);
   console.log(`   http://127.0.0.1:${PORT}`);
   console.log(`\n   Config file: ${CONFIG_PATH}\n`);
 });

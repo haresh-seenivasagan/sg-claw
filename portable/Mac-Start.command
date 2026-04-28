@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================================
-# U-Claw - Portable AI Agent (macOS)
-# Double-click to start / 双击启动
+# SG Claw - Portable AI Agent (macOS)
+# Double-click to start
 # ============================================================
 
 UCLAW_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -25,8 +25,8 @@ NC='\033[0m'
 echo ""
 echo -e "${CYAN}"
 echo "  ╔══════════════════════════════════════╗"
-echo "  ║     🦞 U-Claw v1.1                  ║"
-echo "  ║     Portable AI Agent               ║"
+echo "  ║     SG Claw                         ║"
+echo "  ║     Portable OpenClaw Assistant     ║"
 echo "  ╚══════════════════════════════════════╝"
 echo -e "${NC}"
 
@@ -98,7 +98,8 @@ export OPENCLAW_CONFIG_PATH="$CONFIG_FILE"
 # ---- 7. Check dependencies ----
 if [ ! -d "$CORE_DIR/node_modules" ]; then
     echo -e "  ${YELLOW}First run - installing dependencies...${NC}"
-    echo "  (Using China mirror)"
+    echo "  Preparing bundled OpenClaw runtime..."
+    mkdir -p "$CORE_DIR"
     cd "$CORE_DIR"
     "$NODE_BIN" "$NODE_DIR/bin/npm" install --registry=https://registry.npmmirror.com 2>&1
     echo -e "  ${GREEN}Dependencies installed${NC}"
@@ -146,7 +147,7 @@ for i in $(seq 1 30); do
 done
 
 echo -e "  ${GREEN}════════════════════════════════${NC}"
-echo -e "  ${GREEN}🦞 U-Claw is running!${NC}"
+echo -e "  ${GREEN}SG Claw is running!${NC}"
 echo -e "  ${GREEN}   Dashboard:     http://127.0.0.1:$PORT/#token=uclaw${NC}"
 echo -e "  ${GREEN}   Config Center: http://127.0.0.1:18788/${NC}"
 echo ""
@@ -159,7 +160,7 @@ cleanup() {
     kill $GW_PID 2>/dev/null
     kill $CONFIG_PID 2>/dev/null
     echo ""
-    echo -e "  🦞 U-Claw stopped."
+    echo -e "  SG Claw stopped."
     exit 0
 }
 trap cleanup INT TERM
