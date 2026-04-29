@@ -15,15 +15,17 @@ BOLD='\033[1m'
 
 APP_DIR="$(cd "$(dirname "$0")" && pwd)"
 NODE_VER="v22.16.0"
-MIRROR="https://registry.npmmirror.com"
-NODE_MIRROR="https://npmmirror.com/mirrors/node"
+NPM_REGISTRY="${NPM_REGISTRY:-https://registry.npmjs.org}"
+NODE_MIRROR="${NODE_MIRROR:-https://nodejs.org/dist}"
+ELECTRON_MIRROR="${ELECTRON_MIRROR:-}"
+ELECTRON_BUILDER_BINARIES_MIRROR="${ELECTRON_BUILDER_BINARIES_MIRROR:-}"
 
 clear 2>/dev/null || true
 echo ""
 echo -e "${CYAN}${BOLD}"
 echo "  ╔══════════════════════════════════════╗"
 echo "  ║   SG Claw Desktop App Setup          ║"
-echo "  ║   一键安装开发环境                    ║"
+echo "  ║   Desktop app setup                  ║"
 echo "  ╚══════════════════════════════════════╝"
 echo -e "${NC}"
 
@@ -70,7 +72,7 @@ if [ -z "$NODE_BIN" ]; then
         NODE_BIN="$NODE_BIN_PATH"
     else
         echo -e "  ${YELLOW}下载 Node.js $NODE_VER ($PLATFORM)...${NC}"
-        echo -e "  ${CYAN}镜像: npmmirror.com${NC}"
+        echo -e "  ${CYAN}Node source: $NODE_MIRROR${NC}"
 
         TARBALL="node-${NODE_VER}-${PLATFORM}.tar.gz"
         URL="${NODE_MIRROR}/${NODE_VER}/${TARBALL}"
@@ -92,17 +94,16 @@ echo -e "  Node: ${GREEN}$("$NODE_BIN" --version)${NC}"
 echo ""
 
 # ---- 2. Install npm dependencies ----
-echo -e "  ${BOLD}[2/4] 安装依赖 (国内镜像)...${NC}"
-echo -e "  ${CYAN}镜像: $MIRROR${NC}"
+echo -e "  ${BOLD}[2/4] 安装依赖...${NC}"
+echo -e "  ${CYAN}Registry: $NPM_REGISTRY${NC}"
 echo ""
 
 cd "$APP_DIR"
 
-# Set electron mirror for China
-export ELECTRON_MIRROR="https://npmmirror.com/mirrors/electron/"
-export ELECTRON_BUILDER_BINARIES_MIRROR="https://npmmirror.com/mirrors/electron-builder-binaries/"
+if [ -n "$ELECTRON_MIRROR" ]; then export ELECTRON_MIRROR; fi
+if [ -n "$ELECTRON_BUILDER_BINARIES_MIRROR" ]; then export ELECTRON_BUILDER_BINARIES_MIRROR; fi
 
-npm install --registry="$MIRROR" 2>&1 | tail -5
+npm install --registry="$NPM_REGISTRY" 2>&1 | tail -20
 echo ""
 echo -e "  ${GREEN}依赖安装完成 ✓${NC}"
 echo ""
