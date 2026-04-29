@@ -18,7 +18,7 @@ NODE_VER="v22.16.0"
 MIRROR="https://registry.npmmirror.com"
 NODE_MIRROR="https://npmmirror.com/mirrors/node"
 
-clear
+clear 2>/dev/null || true
 echo ""
 echo -e "${CYAN}${BOLD}"
 echo "  ╔══════════════════════════════════════╗"
@@ -49,17 +49,20 @@ if [ -z "$NODE_BIN" ]; then
     if [ "$OS" = "darwin" ]; then
         if [ "$ARCH" = "arm64" ]; then
             PLATFORM="darwin-arm64"
+            RUNTIME_NAME="node-mac-arm64"
         else
             PLATFORM="darwin-x64"
+            RUNTIME_NAME="node-mac-x64"
         fi
     elif [ "$OS" = "linux" ]; then
         PLATFORM="linux-x64"
+        RUNTIME_NAME="node-linux-x64"
     else
         echo -e "  ${RED}不支持的系统: $OS${NC}"
         exit 1
     fi
 
-    RUNTIME_DIR="$APP_DIR/resources/runtime/node-${OS}-${ARCH}"
+    RUNTIME_DIR="$APP_DIR/resources/runtime/$RUNTIME_NAME"
     NODE_BIN_PATH="$RUNTIME_DIR/bin/node"
 
     if [ -f "$NODE_BIN_PATH" ]; then
@@ -110,14 +113,26 @@ echo -e "  ${BOLD}[3/4] 准备打包用 Node.js runtime...${NC}"
 # For packaging, we need the runtime in resources/ for the target platform
 ARCH=$(uname -m)
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
-RUNTIME_DIR="$APP_DIR/resources/runtime/node-${OS}-${ARCH}"
+if [ "$OS" = "darwin" ]; then
+    if [ "$ARCH" = "arm64" ]; then
+        PLATFORM="darwin-arm64"
+        RUNTIME_NAME="node-mac-arm64"
+    else
+        PLATFORM="darwin-x64"
+        RUNTIME_NAME="node-mac-x64"
+    fi
+elif [ "$OS" = "linux" ]; then
+    PLATFORM="linux-x64"
+    RUNTIME_NAME="node-linux-x64"
+else
+    PLATFORM="${OS}-${ARCH}"
+    RUNTIME_NAME="node-${OS}-${ARCH}"
+fi
+RUNTIME_DIR="$APP_DIR/resources/runtime/$RUNTIME_NAME"
 
 if [ -f "$RUNTIME_DIR/bin/node" ]; then
     echo -e "  ${GREEN}Runtime 已就绪 ✓${NC}"
 else
-    PLATFORM="${OS}-${ARCH}"
-    [ "$OS" = "darwin" ] && [ "$ARCH" = "x86_64" ] && PLATFORM="darwin-x64"
-
     echo -e "  ${YELLOW}下载 Node.js $NODE_VER runtime ($PLATFORM)...${NC}"
     TARBALL="node-${NODE_VER}-${PLATFORM}.tar.gz"
     URL="${NODE_MIRROR}/${NODE_VER}/${TARBALL}"

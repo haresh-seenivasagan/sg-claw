@@ -3,12 +3,13 @@ const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 const http = require('http');
+const { findNodeBinary } = require('./runtime-paths');
 
 // ── Constants ──
 const APP_NAME = 'SG Claw';
 const DEFAULT_PORT = 18789;
 const MAX_PORT = 18799;
-const GATEWAY_STARTUP_TIMEOUT = 30000;
+const GATEWAY_STARTUP_TIMEOUT = 90000;
 
 // ── Paths ──
 const isDev = process.argv.includes('--dev');
@@ -26,21 +27,11 @@ const openclawEntry = path.join(openclawPath, 'openclaw.mjs');
 
 // Bundled Node.js runtime (OpenClaw needs standalone Node, not Electron's)
 function getNodeBin() {
-  const platform = process.platform;
-  const arch = process.arch;
-  if (isDev) {
-    const devNodeDir = path.join(__dirname, '..', 'resources', 'runtime', `node-${platform}-${arch}`);
-    const devNodeBin = platform === 'win32'
-      ? path.join(devNodeDir, 'node.exe')
-      : path.join(devNodeDir, 'bin', 'node');
-    if (fs.existsSync(devNodeBin)) return devNodeBin;
-    return 'node';
-  }
-  const nodeDir = path.join(process.resourcesPath, 'resources', 'runtime', `node-${platform}-${arch}`);
-  const nodeBin = platform === 'win32'
-    ? path.join(nodeDir, 'node.exe')
-    : path.join(nodeDir, 'bin', 'node');
-  if (fs.existsSync(nodeBin)) return nodeBin;
+  const runtimeRoot = isDev
+    ? path.join(__dirname, '..', 'resources', 'runtime')
+    : path.join(process.resourcesPath, 'resources', 'runtime');
+  const bundledNode = findNodeBinary(runtimeRoot);
+  if (bundledNode) return bundledNode;
   return 'node';
 }
 
@@ -246,6 +237,29 @@ function startGateway(port) {
       OPENCLAW_EMBEDDED_IN: APP_NAME,
     };
 
+    if (!fs.existsSync(openclawEntry)) {
+      reject(new Error(`OpenClaw entry not found: ${openclawEntry}`));
+      return;
+    }
+
+    let settled = false;
+    let stderrTail = '';
+
+    const fail = (err) => {
+      if (settled) return;
+      settled = true;
+      reject(err);
+    };
+
+    const succeed = () => {
+      if (settled) return;
+      settled = true;
+      gatewayReady = true;
+      gatewayPort = port;
+      console.log(`[${APP_NAME}] Gateway ready on port ${port}`);
+      resolve(port);
+    };
+
     gatewayProcess = spawn(nodeBin, [
       openclawEntry,
       'gateway', 'run',
@@ -266,32 +280,36 @@ function startGateway(port) {
     gatewayProcess.stderr.on('data', (data) => {
       const msg = data.toString().trim();
       if (msg) console.error(`[OpenClaw:err] ${msg}`);
+      stderrTail = `${stderrTail}\n${msg}`.slice(-2000);
     });
 
     gatewayProcess.on('error', (err) => {
       console.error(`[${APP_NAME}] Gateway process error:`, err);
-      reject(err);
+      fail(err);
     });
 
     gatewayProcess.on('exit', (code) => {
       console.log(`[${APP_NAME}] Gateway exited with code ${code}`);
       gatewayProcess = null;
       gatewayReady = false;
+      if (!settled) {
+        const detail = stderrTail.trim() ? `\n\n${stderrTail.trim()}` : '';
+        fail(new Error(`OpenClaw gateway exited before it was ready (code ${code}).${detail}`));
+      }
     });
 
     // Poll for gateway readiness
     const startTime = Date.now();
     const checkReady = () => {
+      if (settled) return;
       if (Date.now() - startTime > GATEWAY_STARTUP_TIMEOUT) {
-        reject(new Error('Gateway startup timeout'));
+        const detail = stderrTail.trim() ? `\n\nLast gateway output:\n${stderrTail.trim()}` : '';
+        fail(new Error(`Gateway startup timeout after ${Math.round(GATEWAY_STARTUP_TIMEOUT / 1000)} seconds.${detail}`));
         return;
       }
 
       const req = http.get(`http://127.0.0.1:${port}/`, (res) => {
-        gatewayReady = true;
-        gatewayPort = port;
-        console.log(`[${APP_NAME}] Gateway ready on port ${port}`);
-        resolve(port);
+        succeed();
       });
       req.on('error', () => setTimeout(checkReady, 500));
       req.setTimeout(2000, () => {
@@ -487,7 +505,7 @@ app.whenReady().then(async () => {
     console.error(`[${APP_NAME}] Failed to start gateway:`, err);
     dialog.showErrorBox(
       `${APP_NAME} - Startup Error`,
-      `Failed to start OpenClaw gateway.\n\n${err.message}\n\nPlease check if Node.js is available and try again.`
+      `Failed to start OpenClaw gateway.\n\n${err.message}\n\nRun the desktop setup again or rebuild the app so the bundled Node.js runtime and OpenClaw files are present.`
     );
   }
 });
